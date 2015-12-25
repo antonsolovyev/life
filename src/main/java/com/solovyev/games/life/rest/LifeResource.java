@@ -1,6 +1,6 @@
 package com.solovyev.games.life.rest;
 
-import com.solovyev.games.life.domain.InitBlock;
+import com.solovyev.games.life.domain.ConfigBean;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +23,8 @@ public class LifeResource
     @GET
     @Path("/init")
     @Produces({ MediaType.APPLICATION_JSON })
-    public InitBlock getInitBlock()
+    public ConfigBean getConfigBean()
     {
-        return new InitBlock(100, 100);
+        return new ConfigBean(100, 100);
     }
 }

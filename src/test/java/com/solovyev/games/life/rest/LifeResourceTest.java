@@ -1,8 +1,6 @@
 package com.solovyev.games.life.rest;
 
-import com.solovyev.games.life.domain.InitBlock;
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.server.ResourceConfig;
+import com.solovyev.games.life.domain.ConfigBean;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
 import org.glassfish.jersey.test.JerseyTest;
@@ -12,9 +10,6 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
-
-import javax.validation.OverridesAttribute;
-import javax.ws.rs.core.Application;
 
 import static org.junit.Assert.*;
 
@@ -42,7 +37,7 @@ public class LifeResourceTest extends JerseyTest
     @Test
     public void testGetInitBlock() throws Exception
     {
-        InitBlock initBlock = target("/init").request().get(InitBlock.class);
-        assertEquals(new InitBlock(100, 100), initBlock);
+        ConfigBean initBlock = target("/init").request().get(ConfigBean.class);
+        assertEquals(new ConfigBean(100, 100), initBlock);
     }
 }

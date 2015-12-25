@@ -1,17 +1,17 @@
 package com.solovyev.games.life.domain;
 
-public class InitBlock
+public class ConfigBean
 {
     private final Integer boardHeight;
     private final Integer boardWidth;
 
-    public InitBlock(Integer boardWidth, Integer boardHeight)
+    public ConfigBean(Integer boardWidth, Integer boardHeight)
     {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
     }
 
-    private InitBlock()
+    private ConfigBean()
     {
         this(null, null);
     }
@@ -29,7 +29,7 @@ public class InitBlock
     @Override
     public String toString()
     {
-        return "InitBlock{" +
+        return "ConfigBean{" +
                 "boardHeight=" + boardHeight +
                 ", boardWidth=" + boardWidth +
                 '}';
@@ -41,7 +41,7 @@ public class InitBlock
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        InitBlock initBlock = (InitBlock) o;
+        ConfigBean initBlock = (ConfigBean) o;
 
         if (boardHeight != null ? !boardHeight.equals(initBlock.boardHeight) : initBlock.boardHeight != null)
             return false;
