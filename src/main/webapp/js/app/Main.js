@@ -7,18 +7,49 @@ $(document).ready(function () {
 Life.Main = function () {
     var that = {};
 
+    var amendUnderscore = function()
+    {
+        _.mixin(
+            {
+                getFromUrl: function(url)
+                {
+                    var res = "";
+                    this.cache = this.cache || {};
+
+                    if (this.cache[url])
+                    {
+                        res = this.cache[url];
+                    }
+                    else
+                    {
+                        $.ajax(
+                            {
+                                url: url,
+                                method: "GET",
+                                async: false,
+                                success: function(data)
+                                {
+                                    res = data;
+                                },
+                                error: function()
+                                {
+                                    alert('Error retrieving data from a URL!');
+                                }
+                            });
+
+                        this.cache[url] = res;
+                    }
+
+                    return res;
+                }
+            });
+    }
+
     that.main = function () {
-        var lifeEngine = new Life.LifeEngine({width: 10, height: 10});
+        amendUnderscore();
 
-        lifeEngine.board[4][4] = 1;
-        lifeEngine.board[4][5] = 1;
-        lifeEngine.board[4][6] = 1;
-
-        lifeEngine.addListener(function (lifeEngine) {
-            console.log("=> Update received, lifeEngine: " + lifeEngine);
-        });
-
-        lifeEngine.start();
+        var lifeView = new Life.LifeView();
+        lifeView.render();
     };
 
     return that;

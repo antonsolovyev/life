@@ -1,11 +1,9 @@
 var Life = Life || {};
 
 Life.LifeEngine = function (spec) {
-    var TIMER_TICK = 1000;
-
     var that = {};
+    _.extend(that, Backbone.Events);
     var timer;
-    var listeners = [];
 
     var makeEmptyBoard = function () {
         var res = [];
@@ -31,7 +29,7 @@ Life.LifeEngine = function (spec) {
     };
 
     var startTimer = function () {
-        timer = setInterval(handleTimerEvent, TIMER_TICK);
+        timer = setInterval(handleTimerEvent, that.timerTick);
     };
 
     var stopTimer = function () {
@@ -79,7 +77,7 @@ Life.LifeEngine = function (spec) {
     };
 
     var handleTimerEvent = function () {
-        if (that.gameState !== Life.GameState.RUNNING) {
+        if (that.gameState !== Life.LifeEngine.GameState.RUNNING) {
             return;
         }
 
@@ -87,17 +85,21 @@ Life.LifeEngine = function (spec) {
         postUpdate();
     };
 
+    var postUpdate = function () {
+        that.trigger("update", that);
+    };
+
     that.start = function () {
-        if (that.gameState === Life.GameState.STOPPED) {
-            that.gameState = Life.GameState.RUNNING;
+        if (that.gameState === Life.LifeEngine.GameState.STOPPED) {
+            that.gameState = Life.LifeEngine.GameState.RUNNING;
             startTimer();
         }
     };
 
     that.stop = function () {
-        if (that.gameState !== Life.GameState.RUNNING) {
+        if (that.gameState === Life.LifeEngine.GameState.RUNNING) {
             stopTimer();
-            that.gameState = Life.GameState.STOPPED;
+            that.gameState = Life.LifeEngine.GameState.STOPPED;
         }
     };
 
@@ -105,26 +107,6 @@ Life.LifeEngine = function (spec) {
         that.stop();
         that.board = makeEmptyBoard();
         postUpdate();
-    };
-
-    that.addListener = function (listener) {
-        listeners.push(listener);
-    };
-
-    that.removeListener = function (listener) {
-        var newListeners = [];
-        for (var i in that.listeners) {
-            if (that.listeners[i] !== listener) {
-                newListeners.push(that.listeners[i]);
-            }
-        }
-        that.listeners = newListeners;
-    };
-
-    var postUpdate = function () {
-        for (var i in listeners) {
-            listeners[i](that);
-        }
     };
 
     that.toString = function () {
@@ -154,14 +136,15 @@ Life.LifeEngine = function (spec) {
 
     that.width = spec.width;
     that.height = spec.height;
-    that.board = makeEmptyBoard();
-    that.gameState = Life.GameState.STOPPED;
+    that.timerTick = spec.timerTick;
+    that.gameState = Life.LifeEngine.GameState.STOPPED;
     that.generation = 0;
+    that.board = makeEmptyBoard();
 
     return that;
 };
 
-Life.GameState = {
+Life.LifeEngine.GameState = {
     STOPPED: "STOPPED",
     RUNNING: "RUNNING"
 };
