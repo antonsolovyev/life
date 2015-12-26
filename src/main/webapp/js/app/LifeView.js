@@ -24,10 +24,10 @@ Life.LifeView = function (spec) {
     var cellSize;
 
     var handleStartStopButton = function () {
-        if(lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
+        if (lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
             lifeEngine.stop();
         }
-        else if(lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
+        else if (lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
             lifeEngine.start();
         }
         $("#startStopButonSpan").text(getStartStopButtonText());
@@ -144,10 +144,10 @@ Life.LifeView = function (spec) {
     };
 
     var getStartStopButtonText = function () {
-        if(lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
+        if (lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
             return "Stop";
         }
-        else if(lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
+        else if (lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
             return "Start";
         }
         else {

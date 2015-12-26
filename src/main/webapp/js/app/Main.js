@@ -7,32 +7,26 @@ $(document).ready(function () {
 Life.Main = function () {
     var that = {};
 
-    var amendUnderscore = function()
-    {
+    var amendUnderscore = function () {
         _.mixin(
             {
-                getFromUrl: function(url)
-                {
+                getFromUrl: function (url) {
                     var res = "";
                     this.cache = this.cache || {};
 
-                    if (this.cache[url])
-                    {
+                    if (this.cache[url]) {
                         res = this.cache[url];
                     }
-                    else
-                    {
+                    else {
                         $.ajax(
                             {
                                 url: url,
                                 method: "GET",
                                 async: false,
-                                success: function(data)
-                                {
+                                success: function (data) {
                                     res = data;
                                 },
-                                error: function()
-                                {
+                                error: function () {
                                     alert('Error retrieving data from a URL!');
                                 }
                             });
