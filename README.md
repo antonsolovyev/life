@@ -1,5 +1,5 @@
-Conway's Game of Life webapp.
+#Conway's Game of Life.
 
-Practicing Javascript and frameworks.
+*Practicing Javascript and frameworks.*
 
 https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life

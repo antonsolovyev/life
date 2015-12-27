@@ -5,7 +5,7 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
-    <display-name>Conway Game of Life</display-name>
+    <display-name>Conway's Game of Life</display-name>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
