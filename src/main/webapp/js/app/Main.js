@@ -33,7 +33,6 @@ Life.Main = function () {
 
                         this.cache[url] = res;
                     }
-
                     return res;
                 }
             });

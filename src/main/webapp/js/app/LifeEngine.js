@@ -3,7 +3,7 @@ var Life = Life || {};
 Life.LifeEngine = function (spec) {
     var that = {};
     _.extend(that, Backbone.Events);
-    var timer;
+    var timeout;
 
     var makeEmptyBoard = function () {
         var res = [];
@@ -29,11 +29,15 @@ Life.LifeEngine = function (spec) {
     };
 
     var startTimer = function () {
-        timer = setInterval(handleTimerEvent, that.timerTick);
+        timeout = setTimeout(function () {
+            handleTimerEvent();
+            clearTimeout(timeout);
+            timeout = setTimeout(startTimer, that.timerTick);
+        }, that.timerTick);
     };
 
     var stopTimer = function () {
-        clearInterval(timer);
+        clearTimeout(timeout);
     };
 
     var iterateBoard = function () {
@@ -44,7 +48,7 @@ Life.LifeEngine = function (spec) {
                 var liveNeighborCount = 0;
                 for (var k = -1; k < 2; k++) {
                     for (var l = -1; l < 2; l++) {
-                        if(k === 0 && l === 0) {
+                        if (k === 0 && l === 0) {
                             continue;
                         }
                         var x = modulo({n: i + k, mod: that.width});
@@ -116,12 +120,10 @@ Life.LifeEngine = function (spec) {
         res += "gameState: " + that.gameState + ", ";
         res += "generation: " + that.generation + ", ";
         res += "board:\n";
-        for(var j = 0; j < that.height; j++)
-        {
+        for (var j = 0; j < that.height; j++) {
             res += "    ";
-            for(var i = 0; i < that.width; i++)
-            {
-                if(that.board[i][j] > 0) {
+            for (var i = 0; i < that.width; i++) {
+                if (that.board[i][j] > 0) {
                     res += "x ";
                 }
                 else {

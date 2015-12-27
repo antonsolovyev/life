@@ -7,6 +7,9 @@ Life.LifeView = function (spec) {
             events: {
                 "click #startStopButton": function () {
                     handleStartStopButton();
+                },
+                "input #speedSlider": function (e) {
+                    lifeEngine.timerTick = sliderToTimerTick(e.target.value);
                 }
             }
         });
@@ -17,6 +20,7 @@ Life.LifeView = function (spec) {
     var CELL_COLOR = "black";
     var CELL_GAP = 2;
     var GRID_COLOR = '#D0D0D0';
+    var DEFAULT_TIMER_TICK = 50;
     var lifeEngine;
     var canvas;
     var windowWidth;
@@ -157,6 +161,15 @@ Life.LifeView = function (spec) {
 
     var initControls = function () {
         $("#startStopButonSpan").text(getStartStopButtonText());
+        $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(DEFAULT_TIMER_TICK)});
+    };
+
+    var sliderToTimerTick = function (sliderValue) {
+        return sliderValue;
+    };
+
+    var timerTickToSlider = function (timerTickValue) {
+        return timerTickValue;
     };
 
     that.render = function () {
