@@ -10,6 +10,9 @@ Life.LifeView = function (spec) {
                 },
                 "input #speedSlider": function (e) {
                     lifeEngine.timerTick = sliderToTimerTick(e.target.value);
+                },
+                "mousedown #boardCanvas": function (e) {
+                    handleBoardClick(e);
                 }
             }
         });
@@ -37,6 +40,18 @@ Life.LifeView = function (spec) {
         $("#startStopButonSpan").text(getStartStopButtonText());
     };
 
+    var handleBoardClick = function (e) {
+        lifeEngine.stop();
+        var cellLocation = getCellLocation(new Life.LifeEngine.Point({x: e.offsetX, y: e.offsetY}));
+        if(lifeEngine.board[cellLocation.x][cellLocation.y] === 0) {
+            lifeEngine.board[cellLocation.x][cellLocation.y] = 1;
+        }
+        else {
+            lifeEngine.board[cellLocation.x][cellLocation.y] = 0;
+        }
+        update();
+    };
+
     var initLifeEngine = function () {
         lifeEngine = new Life.LifeEngine({width: 60, height: 60, timerTick: 50});
 
@@ -47,13 +62,15 @@ Life.LifeView = function (spec) {
         lifeEngine.board[2][1] = 1;
 
         lifeEngine.on("update", function (lifeEngine) {
-            refresh();
+            update();
         });
 
         lifeEngine.start();
     };
 
-    var refresh = function () {
+    var update = function () {
+        $("#startStopButonSpan").text(getStartStopButtonText());
+
         if (!canvas) {
             return;
         }
@@ -110,10 +127,16 @@ Life.LifeView = function (spec) {
     var getCellRect = function (x, y) {
         var left = x * cellSize + CELL_GAP;
         var top = y * cellSize + CELL_GAP;
-        var right = left + cellSize - CELL_GAP;
-        var bottom = top + cellSize - CELL_GAP;
+        var right = (x + 1) * cellSize;
+        var bottom = (y + 1) * cellSize;
 
         return new Life.LifeView.Rect({left: left, top: top, right: right, bottom: bottom});
+    };
+
+    var getCellLocation = function (point) {
+        var x = Math.floor(point.x / cellSize) % lifeEngine.width;
+        var y = Math.floor(point.y / cellSize) % lifeEngine.height;
+        return {x: x, y: y}
     };
 
     var getCanvasHeight = function () {
@@ -160,7 +183,6 @@ Life.LifeView = function (spec) {
     };
 
     var initControls = function () {
-        $("#startStopButonSpan").text(getStartStopButtonText());
         $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(DEFAULT_TIMER_TICK)});
     };
 
@@ -182,7 +204,8 @@ Life.LifeView = function (spec) {
         initCellSize();
         initCanvasSize();
         initControls();
-        refresh();
+
+        update();
     };
 
     initLifeEngine();
@@ -212,6 +235,22 @@ Life.LifeView.Rect = function (spec) {
         res += "top: " + that.top + ", ";
         res += "width: " + that.width() + ", ";
         res += "height: " + that.height() + "}";
+        return res;
+    };
+
+    return that;
+};
+
+Life.LifeEngine.Point = function(spec){
+    var that = {};
+
+    that.x = spec.x;
+    that.y = spec.y;
+
+    that.toString = function () {
+        var res = "Life.LiveView.Point {";
+        res += "x: " + that.x + ", ";
+        res += "y: " + that.y + "}";
         return res;
     };
 
