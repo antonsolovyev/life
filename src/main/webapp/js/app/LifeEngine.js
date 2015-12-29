@@ -152,24 +152,3 @@ Life.LifeEngine.GameState = {
     STOPPED: "STOPPED",
     RUNNING: "RUNNING"
 };
-
-Life.LifeEngine.Cell = function (spec) {
-    var that = {};
-    that.x = spec.x;
-    that.y = spec.y;
-    that.age = spec.age;
-
-    that.toString = function () {
-        var res = "Life.LifeEngine.Cell {";
-        res += "x: " + that.x + ", ";
-        res += "y: " + that.y + ", ";
-        res += "age: " + that.age + "}";
-        return res;
-    };
-
-    that.hashCode = function () {
-        return (x * 31 + y).toString();
-    };
-
-    return that;
-};

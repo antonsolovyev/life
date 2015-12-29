@@ -42,12 +42,12 @@ Life.LifeView = function (spec) {
 
     var handleBoardClick = function (e) {
         lifeEngine.stop();
-        var cellLocation = getCellLocation(new Life.LifeEngine.Point({x: e.offsetX, y: e.offsetY}));
-        if(lifeEngine.board[cellLocation.x][cellLocation.y] === 0) {
-            lifeEngine.board[cellLocation.x][cellLocation.y] = 1;
+        var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
+        if(lifeEngine.board[boardLocation.x][boardLocation.y] === 0) {
+            lifeEngine.board[boardLocation.x][boardLocation.y] = 1;
         }
         else {
-            lifeEngine.board[cellLocation.x][cellLocation.y] = 0;
+            lifeEngine.board[boardLocation.x][boardLocation.y] = 0;
         }
         update();
     };
@@ -133,9 +133,9 @@ Life.LifeView = function (spec) {
         return new Life.LifeView.Rect({left: left, top: top, right: right, bottom: bottom});
     };
 
-    var getCellLocation = function (point) {
-        var x = Math.floor(point.x / cellSize) % lifeEngine.width;
-        var y = Math.floor(point.y / cellSize) % lifeEngine.height;
+    var getBoardLocation = function (x, y) {
+        var x = Math.floor(x / cellSize) % lifeEngine.width;
+        var y = Math.floor(y / cellSize) % lifeEngine.height;
         return {x: x, y: y}
     };
 
@@ -235,22 +235,6 @@ Life.LifeView.Rect = function (spec) {
         res += "top: " + that.top + ", ";
         res += "width: " + that.width() + ", ";
         res += "height: " + that.height() + "}";
-        return res;
-    };
-
-    return that;
-};
-
-Life.LifeEngine.Point = function(spec){
-    var that = {};
-
-    that.x = spec.x;
-    that.y = spec.y;
-
-    that.toString = function () {
-        var res = "Life.LiveView.Point {";
-        res += "x: " + that.x + ", ";
-        res += "y: " + that.y + "}";
         return res;
     };
 
