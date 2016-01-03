@@ -1,32 +1,33 @@
 package com.solovyev.games.life.dao;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovyev.games.life.domain.Pattern;
 
+import java.io.IOException;
 import java.util.*;
 
 public class InMemoryPatternDao implements PatternDao
 {
-    private Map<Long, Pattern> patterns;
+    private Map<Long, Pattern> patterns = new HashMap<Long, Pattern>();
     private Long nextId = 0L;
 
     public InMemoryPatternDao()
     {
-        patterns = new HashMap<Long, Pattern>();
+    }
 
-        add(new Pattern(null, "Glider", new HashSet<Pattern.Location>()
-        {{
-            add(new Pattern.Location(0, 2));
-            add(new Pattern.Location(1, 2));
-            add(new Pattern.Location(2, 2));
-            add(new Pattern.Location(1, 0));
-            add(new Pattern.Location(2, 1));
-        }}));
-        add(new Pattern(null, "Blinker", new HashSet<Pattern.Location>()
-        {{
-            add(new Pattern.Location(1, 1));
-            add(new Pattern.Location(1, 2));
-            add(new Pattern.Location(1, 3));
-        }}));
+    public InMemoryPatternDao(String serializedPatternsList) throws IOException
+    {
+        this(new ObjectMapper().<List<Pattern>>readValue(serializedPatternsList,
+                new TypeReference<List<Pattern>>(){}));
+    }
+
+    public InMemoryPatternDao(List<Pattern> patterns)
+    {
+        for(Pattern p : patterns)
+        {
+            add(p);
+        }
     }
 
     private Long add(Pattern pattern)
@@ -35,16 +36,6 @@ public class InMemoryPatternDao implements PatternDao
         Long res = nextId;
         nextId++;
         return res;
-    }
-
-    public InMemoryPatternDao(List<Pattern> patterns)
-    {
-        this.patterns = new HashMap<Long, Pattern>();
-
-        for(Pattern p : patterns)
-        {
-            add(p);
-        }
     }
 
     public Pattern readPattern(Long id)

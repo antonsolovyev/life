@@ -21,5 +21,7 @@
         <constructor-arg index="3" value="${timerTick}"/>
     </bean>
 
-    <bean id="patternDao" class="com.solovyev.games.life.dao.InMemoryPatternDao"/>
+    <bean id="patternDao" class="com.solovyev.games.life.dao.InMemoryPatternDao">
+        <constructor-arg index="0" value="${patterns}"/>
+    </bean>
 </beans>
