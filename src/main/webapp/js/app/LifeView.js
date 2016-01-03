@@ -20,7 +20,6 @@ Life.LifeView = function (spec) {
                 "input #speedSlider": function (e) {
                     lifeEngine.stop();
                     lifeEngine.timerTick = sliderToTimerTick(e.target.value);
-                    console.log("=> timerTick: " + lifeEngine.timerTick);
                     lifeEngine.start();
                 },
                 "mousedown #boardCanvas": function (e) {
