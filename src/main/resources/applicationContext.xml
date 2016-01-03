@@ -43,6 +43,9 @@
         <!--<constructor-arg index="0" ref="highScoreDatastoreDao"/>-->
     <!--</bean>-->
 
-    <bean id="lifeResource" class="com.solovyev.games.life.rest.LifeResource"/>
+    <bean id="lifeResource" class="com.solovyev.games.life.rest.LifeResource">
+        <constructor-arg index="0" ref="patternDao"/>
+    </bean>
 
+    <bean id="patternDao" class="com.solovyev.games.life.dao.InMemoryPatternDao"/>
 </beans>

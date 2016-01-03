@@ -8,6 +8,12 @@ Life.LifeView = function (spec) {
                 "click #startStopButton": function () {
                     handleStartStopButton();
                 },
+                "click #patternsButton": function () {
+                    handlePatternsButton();
+                },
+                "click #saveButton": function () {
+                    handleSaveButton();
+                },
                 "input #speedSlider": function (e) {
                     lifeEngine.timerTick = sliderToTimerTick(e.target.value);
                 },
@@ -18,6 +24,7 @@ Life.LifeView = function (spec) {
         });
     var that = new T();
 
+    var messageBus = spec.messageBus;
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
@@ -29,6 +36,60 @@ Life.LifeView = function (spec) {
     var windowWidth;
     var windowHeight;
     var cellSize;
+
+    messageBus.on("loadPattern", function (pattern) {
+        lifeEngine.reset();
+        var locations = pattern.get('locations');
+        for(var i = 0; i < locations.length; i++)
+        {
+            var location = locations[i];
+            lifeEngine.board[location.x][location.y] = 1;
+        }
+        update();
+    });
+
+    var handlePatternsButton = function () {
+        messageBus.trigger("showPatternsView");
+    };
+
+    var handleSaveButton = function () {
+        lifeEngine.stop();
+        update();
+
+        $('body').append(_.template(_.getFromUrl('/template/savePatternDialog.html')));
+
+        $('#savePatternDialog').dialog({
+            resizable: false,
+            modal: true,
+            close: function () {
+                $('#savePatternDialog').dialog('destroy');
+                $('#savePatternDialog').remove();
+                lifeEngine.start()
+                update();
+            },
+            buttons:
+            {
+                Save: function () {
+                    var name = $('#nameField').val();
+                    if(name && name !== "") {
+                        var locations = [];
+                        for(var i = 0; i < lifeEngine.width; i++) {
+                            for(var j = 0; j < lifeEngine.height; j++) {
+                                if(lifeEngine.board[i][j] !== 0) {
+                                    locations.push({x: i, y: j});
+                                }
+                            }
+                        }
+                        var pattern = new Life.PatternsView.Pattern({name: name, locations: locations},
+                            {collection: new Life.PatternsView.PatternList()});
+                        pattern.save();
+                    }
+
+                    $('#savePatternDialog').dialog('close');
+                }
+            }
+        });
+    };
 
     var handleStartStopButton = function () {
         if (lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
@@ -55,17 +116,9 @@ Life.LifeView = function (spec) {
     var initLifeEngine = function () {
         lifeEngine = new Life.LifeEngine({width: 60, height: 60, timerTick: 50});
 
-        lifeEngine.board[0][2] = 1;
-        lifeEngine.board[1][2] = 1;
-        lifeEngine.board[2][2] = 1;
-        lifeEngine.board[1][0] = 1;
-        lifeEngine.board[2][1] = 1;
-
         lifeEngine.on("update", function (lifeEngine) {
             update();
         });
-
-        lifeEngine.start();
     };
 
     var update = function () {
