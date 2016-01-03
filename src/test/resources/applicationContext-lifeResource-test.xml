@@ -11,6 +11,9 @@
 
     <bean id="lifeResource" class="com.solovyev.games.life.rest.LifeResource">
         <constructor-arg index="0" ref="patternDao"/>
+        <constructor-arg index="1" value="30"/>
+        <constructor-arg index="2" value="30"/>
+        <constructor-arg index="3" value="10"/>
     </bean>
 
     <bean id="patternDao" class="org.springframework.aop.framework.ProxyFactoryBean">

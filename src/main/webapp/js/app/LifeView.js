@@ -28,12 +28,14 @@ Life.LifeView = function (spec) {
     var that = new T();
 
     var messageBus = spec.messageBus;
+    var boardWidth = spec.boardWidth;
+    var boardHeight = spec.boardHeight;
+    var timerTick = spec.timerTick;
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
     var CELL_GAP = 2;
     var GRID_COLOR = '#D0D0D0';
-    var DEFAULT_TIMER_TICK = 50;
     var lifeEngine;
     var canvas;
     var windowWidth;
@@ -61,7 +63,6 @@ Life.LifeView = function (spec) {
         update();
 
         $('body').append(_.template(_.getFromUrl('/template/savePatternDialog.html')));
-
         $('#savePatternDialog').dialog({
             resizable: false,
             modal: true,
@@ -92,7 +93,6 @@ Life.LifeView = function (spec) {
                             alert("Error saving pattern!");
                         }});
                     }
-
                     $('#savePatternDialog').dialog('close');
                 }
             }
@@ -122,7 +122,7 @@ Life.LifeView = function (spec) {
     };
 
     var initLifeEngine = function () {
-        lifeEngine = new Life.LifeEngine({width: 60, height: 60, timerTick: DEFAULT_TIMER_TICK});
+        lifeEngine = new Life.LifeEngine({width: boardWidth, height: boardHeight, timerTick: timerTick});
 
         lifeEngine.on("update", function (lifeEngine) {
             update();

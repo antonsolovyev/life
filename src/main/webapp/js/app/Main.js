@@ -45,6 +45,20 @@ Life.Main = function () {
     that.main = function () {
         amendUnderscore();
 
+        var initParams;
+        $.ajax({
+            url: "/rest/init",
+            method: "GET",
+            async: false,
+            success: function (data) {
+                initParams = data;
+            }
+        });
+        if(!initParams) {
+            alert('Error getting init params!');
+            return;
+        }
+
         messageBus = new Life.MessageBus();
         messageBus.on("showLifeView", function () {
             // TODO
@@ -57,7 +71,8 @@ Life.Main = function () {
             patternsView.render();
         });
 
-        lifeView = new Life.LifeView({messageBus: messageBus});
+        lifeView = new Life.LifeView({messageBus: messageBus, boardWidth: initParams.boardWidth,
+        boardHeight: initParams.boardHeight, timerTick: initParams.timerTick});
         patternsView = new Life.PatternsView({messageBus: messageBus});
 
         messageBus.trigger("showLifeView");

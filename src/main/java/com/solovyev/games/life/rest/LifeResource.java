@@ -1,7 +1,7 @@
 package com.solovyev.games.life.rest;
 
 import com.solovyev.games.life.dao.PatternDao;
-import com.solovyev.games.life.domain.ConfigBean;
+import com.solovyev.games.life.domain.InitParams;
 import com.solovyev.games.life.domain.Pattern;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -17,10 +17,16 @@ public class LifeResource
     private static final Logger LOGGER = Logger.getLogger(LifeResource.class.getName());
 
     private final PatternDao patternDao;
+    private final Integer boardWidth;
+    private final Integer boardHeight;
+    private final Integer timerTick;
 
-    public LifeResource(PatternDao patternDao)
+    public LifeResource(PatternDao patternDao, Integer boardWidth, Integer boardHeight, Integer timerTick)
     {
         this.patternDao = patternDao;
+        this.boardWidth = boardWidth;
+        this.boardHeight = boardHeight;
+        this.timerTick = timerTick;
 
         LOGGER.info("created LifeResource: " + this);
     }
@@ -28,9 +34,9 @@ public class LifeResource
     @GET
     @Path("/init")
     @Produces({ MediaType.APPLICATION_JSON })
-    public ConfigBean getConfigBean()
+    public InitParams getInitParams()
     {
-        return new ConfigBean(100, 100);
+        return new InitParams(boardWidth, boardHeight, timerTick);
     }
 
     @GET

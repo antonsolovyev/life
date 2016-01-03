@@ -1,7 +1,7 @@
 package com.solovyev.games.life.rest;
 
 import com.solovyev.games.life.dao.PatternDao;
-import com.solovyev.games.life.domain.ConfigBean;
+import com.solovyev.games.life.domain.InitParams;
 import com.solovyev.games.life.domain.Pattern;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -89,8 +89,8 @@ public class LifeResourceTest extends JerseyTest
     @Test
     public void testGetInitBlock() throws Exception
     {
-        ConfigBean initBlock = target("/init").request().get(ConfigBean.class);
-        assertEquals(new ConfigBean(100, 100), initBlock);
+        InitParams initBlock = target("/init").request().get(InitParams.class);
+        assertEquals(new InitParams(30, 30, 10), initBlock);
     }
 
     @Test
