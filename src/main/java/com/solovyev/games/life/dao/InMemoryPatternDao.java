@@ -13,7 +13,7 @@ public class InMemoryPatternDao implements PatternDao
     {
         patterns = new HashMap<Long, Pattern>();
 
-        insert(new Pattern(null, "Glider", new HashSet<Pattern.Location>()
+        add(new Pattern(null, "Glider", new HashSet<Pattern.Location>()
         {{
             add(new Pattern.Location(0, 2));
             add(new Pattern.Location(1, 2));
@@ -21,7 +21,7 @@ public class InMemoryPatternDao implements PatternDao
             add(new Pattern.Location(1, 0));
             add(new Pattern.Location(2, 1));
         }}));
-        insert(new Pattern(null, "Blinker", new HashSet<Pattern.Location>()
+        add(new Pattern(null, "Blinker", new HashSet<Pattern.Location>()
         {{
             add(new Pattern.Location(1, 1));
             add(new Pattern.Location(1, 2));
@@ -29,7 +29,7 @@ public class InMemoryPatternDao implements PatternDao
         }}));
     }
 
-    private Long insert(Pattern pattern)
+    private Long add(Pattern pattern)
     {
         patterns.put(nextId, new Pattern(nextId, pattern.getName(), pattern.getLocations()));
         Long res = nextId;
@@ -37,8 +37,23 @@ public class InMemoryPatternDao implements PatternDao
         return res;
     }
 
+    public InMemoryPatternDao(List<Pattern> patterns)
+    {
+        this.patterns = new HashMap<Long, Pattern>();
+
+        for(Pattern p : patterns)
+        {
+            add(p);
+        }
+    }
+
     public Pattern readPattern(Long id)
     {
+        if(!patterns.containsKey(id))
+        {
+            throw new RuntimeException("non-existent id");
+        }
+
         return patterns.get(id);
     }
 
@@ -49,7 +64,7 @@ public class InMemoryPatternDao implements PatternDao
 
     public Long createPattern(Pattern pattern)
     {
-        return insert(pattern);
+        return add(pattern);
     }
 
     public void updatePattern(Long id, Pattern pattern)
