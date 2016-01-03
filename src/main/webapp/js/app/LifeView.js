@@ -114,7 +114,7 @@ Life.LifeView = function (spec) {
     };
 
     var initLifeEngine = function () {
-        lifeEngine = new Life.LifeEngine({width: 60, height: 60, timerTick: 50});
+        lifeEngine = new Life.LifeEngine({width: 60, height: 60, timerTick: DEFAULT_TIMER_TICK});
 
         lifeEngine.on("update", function (lifeEngine) {
             update();
@@ -122,6 +122,7 @@ Life.LifeView = function (spec) {
     };
 
     var update = function () {
+        $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(lifeEngine.timerTick)});
         $("#startStopButonSpan").text(getStartStopButtonText());
 
         if (!canvas) {
@@ -235,10 +236,6 @@ Life.LifeView = function (spec) {
         }
     };
 
-    var initControls = function () {
-        $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(DEFAULT_TIMER_TICK)});
-    };
-
     var sliderToTimerTick = function (sliderValue) {
         return sliderValue;
     };
@@ -256,7 +253,6 @@ Life.LifeView = function (spec) {
 
         initCellSize();
         initCanvasSize();
-        initControls();
 
         update();
     };
