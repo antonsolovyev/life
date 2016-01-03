@@ -54,7 +54,7 @@ Life.Main = function () {
                 initParams = data;
             }
         });
-        if(!initParams) {
+        if (!initParams) {
             alert('Error getting init params!');
             return;
         }
@@ -69,8 +69,10 @@ Life.Main = function () {
             //patternsView.render();
         });
 
-        lifeView = new Life.LifeView({messageBus: messageBus, boardWidth: initParams.boardWidth,
-        boardHeight: initParams.boardHeight, timerTick: initParams.timerTick});
+        lifeView = new Life.LifeView({
+            messageBus: messageBus, boardWidth: initParams.boardWidth,
+            boardHeight: initParams.boardHeight, timerTick: initParams.timerTick
+        });
         patternsView = new Life.PatternsView({messageBus: messageBus});
 
         //messageBus.trigger("showLifeView");
@@ -90,8 +92,7 @@ Life.Main = function () {
 Life.Router = function () {
     var that = new Backbone.Router(
         {
-            routes:
-            {
+            routes: {
                 '': 'home',
                 'patterns': 'patterns'
             }
@@ -100,8 +101,7 @@ Life.Router = function () {
     return that;
 };
 
-Life.MessageBus = function()
-{
+Life.MessageBus = function () {
     var that = {};
 
     // Documentation tells to mix in this specific way

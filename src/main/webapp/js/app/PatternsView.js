@@ -3,8 +3,7 @@ var Life = Life || {};
 Life.PatternsView = function (spec) {
     var T = Backbone.View.extend({
         el: "#page",
-        events:
-        {
+        events: {
             "click #cancelButton": function () {
                 handleCancelButton();
             },
@@ -42,23 +41,22 @@ Life.PatternsView = function (spec) {
 
     that.render = function () {
         patternList.fetch(
-        {
-            success: function (patternList) {
-                var template = _.template(_.getFromUrl('/template/patternsView.html'));
-                that.$el.html(template({'patternList': patternList.models}));
-            },
-            error: function () {
-                alert('Error retrieving patterns!');
-            }
-        });
+            {
+                success: function (patternList) {
+                    var template = _.template(_.getFromUrl('/template/patternsView.html'));
+                    that.$el.html(template({'patternList': patternList.models}));
+                },
+                error: function () {
+                    alert('Error retrieving patterns!');
+                }
+            });
     };
 
     return that;
 };
 
-Life.PatternsView.Pattern = function(attributes, options) {
-    var T = Backbone.Model.extend({
-    });
+Life.PatternsView.Pattern = function (attributes, options) {
+    var T = Backbone.Model.extend({});
     var that = new T(attributes, options);
 
     return that;

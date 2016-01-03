@@ -45,8 +45,7 @@ Life.LifeView = function (spec) {
     messageBus.on("loadPattern", function (pattern) {
         lifeEngine.reset();
         var locations = pattern.get('locations');
-        for(var i = 0; i < locations.length; i++)
-        {
+        for (var i = 0; i < locations.length; i++) {
             var location = locations[i];
             lifeEngine.board[location.x][location.y] = 1;
         }
@@ -69,29 +68,30 @@ Life.LifeView = function (spec) {
             close: function () {
                 $('#savePatternDialog').dialog('destroy');
                 $('#savePatternDialog').remove();
-                if(savedGameState === Life.LifeEngine.GameState.RUNNING) {
+                if (savedGameState === Life.LifeEngine.GameState.RUNNING) {
                     lifeEngine.start();
                 }
                 update();
             },
-            buttons:
-            {
+            buttons: {
                 Save: function () {
                     var name = $('#nameField').val();
-                    if(name && name !== "") {
+                    if (name && name !== "") {
                         var locations = [];
-                        for(var i = 0; i < lifeEngine.width; i++) {
-                            for(var j = 0; j < lifeEngine.height; j++) {
-                                if(lifeEngine.board[i][j] !== 0) {
+                        for (var i = 0; i < lifeEngine.width; i++) {
+                            for (var j = 0; j < lifeEngine.height; j++) {
+                                if (lifeEngine.board[i][j] !== 0) {
                                     locations.push({x: i, y: j});
                                 }
                             }
                         }
                         var pattern = new Life.PatternsView.Pattern({name: name, locations: locations},
                             {collection: new Life.PatternsView.PatternList()});
-                        pattern.save({}, {error: function () {
-                            alert("Error saving pattern!");
-                        }});
+                        pattern.save({}, {
+                            error: function () {
+                                alert("Error saving pattern!");
+                            }
+                        });
                     }
                     $('#savePatternDialog').dialog('close');
                 }
@@ -112,7 +112,7 @@ Life.LifeView = function (spec) {
     var handleBoardClick = function (e) {
         lifeEngine.stop();
         var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
-        if(lifeEngine.board[boardLocation.x][boardLocation.y] === 0) {
+        if (lifeEngine.board[boardLocation.x][boardLocation.y] === 0) {
             lifeEngine.board[boardLocation.x][boardLocation.y] = 1;
         }
         else {
