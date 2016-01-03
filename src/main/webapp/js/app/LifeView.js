@@ -8,6 +8,9 @@ Life.LifeView = function (spec) {
                 "click #startStopButton": function () {
                     handleStartStopButton();
                 },
+                "click #resetButton": function () {
+                    lifeEngine.reset();
+                },
                 "click #patternsButton": function () {
                     handlePatternsButton();
                 },
@@ -53,6 +56,7 @@ Life.LifeView = function (spec) {
     };
 
     var handleSaveButton = function () {
+        var savedGameState = lifeEngine.gameState;
         lifeEngine.stop();
         update();
 
@@ -64,7 +68,9 @@ Life.LifeView = function (spec) {
             close: function () {
                 $('#savePatternDialog').dialog('destroy');
                 $('#savePatternDialog').remove();
-                lifeEngine.start()
+                if(savedGameState === Life.LifeEngine.GameState.RUNNING) {
+                    lifeEngine.start();
+                }
                 update();
             },
             buttons:
@@ -82,7 +88,9 @@ Life.LifeView = function (spec) {
                         }
                         var pattern = new Life.PatternsView.Pattern({name: name, locations: locations},
                             {collection: new Life.PatternsView.PatternList()});
-                        pattern.save();
+                        pattern.save({}, {error: function () {
+                            alert("Error saving pattern!");
+                        }});
                     }
 
                     $('#savePatternDialog').dialog('close');
