@@ -61,30 +61,27 @@ Life.Main = function () {
 
         messageBus = new Life.MessageBus();
         messageBus.on("showLifeView", function () {
-            // TODO
-            //router.navigate("patterns", {'trigger': true});
-            lifeView.render();
+            router.navigate("", {'trigger': true});
+            //lifeView.render();
         });
         messageBus.on("showPatternsView", function () {
-            // TODO
-            //router.navigate("patterns", {'trigger': true});
-            patternsView.render();
+            router.navigate("patterns", {'trigger': true});
+            //patternsView.render();
         });
 
         lifeView = new Life.LifeView({messageBus: messageBus, boardWidth: initParams.boardWidth,
         boardHeight: initParams.boardHeight, timerTick: initParams.timerTick});
         patternsView = new Life.PatternsView({messageBus: messageBus});
 
-        messageBus.trigger("showLifeView");
-        // TODO
-        //router = new Life.Router();
-        //router.on("route:home", function () {
-        //    lifeView.render();
-        //});
-        //router.on("route:patterns", function () {
-        //    patternsView.render();
-        //});
-        //Backbone.history.start();
+        //messageBus.trigger("showLifeView");
+        router = new Life.Router();
+        router.on("route:home", function () {
+            lifeView.render();
+        });
+        router.on("route:patterns", function () {
+            patternsView.render();
+        });
+        Backbone.history.start();
     };
 
     return that;

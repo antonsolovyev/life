@@ -13,7 +13,7 @@ public class InMemoryPatternDao implements PatternDao
     {
         patterns = new HashMap<Long, Pattern>();
 
-        insert(new Pattern(null, "Glider (default)", new HashSet<Pattern.Location>()
+        insert(new Pattern(null, "Glider", new HashSet<Pattern.Location>()
         {{
             add(new Pattern.Location(0, 2));
             add(new Pattern.Location(1, 2));
@@ -21,7 +21,7 @@ public class InMemoryPatternDao implements PatternDao
             add(new Pattern.Location(1, 0));
             add(new Pattern.Location(2, 1));
         }}));
-        insert(new Pattern(null, "Flip-flop", new HashSet<Pattern.Location>()
+        insert(new Pattern(null, "Blinker", new HashSet<Pattern.Location>()
         {{
             add(new Pattern.Location(1, 1));
             add(new Pattern.Location(1, 2));
