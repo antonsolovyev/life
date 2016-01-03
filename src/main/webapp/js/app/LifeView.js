@@ -18,7 +18,10 @@ Life.LifeView = function (spec) {
                     handleSaveButton();
                 },
                 "input #speedSlider": function (e) {
+                    lifeEngine.stop();
                     lifeEngine.timerTick = sliderToTimerTick(e.target.value);
+                    console.log("=> timerTick: " + lifeEngine.timerTick);
+                    lifeEngine.start();
                 },
                 "mousedown #boardCanvas": function (e) {
                     handleBoardClick(e);
@@ -106,7 +109,7 @@ Life.LifeView = function (spec) {
         else if (lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
             lifeEngine.start();
         }
-        $("#startStopButonSpan").text(getStartStopButtonText());
+        update();
     };
 
     var handleBoardClick = function (e) {
@@ -245,11 +248,11 @@ Life.LifeView = function (spec) {
     };
 
     var sliderToTimerTick = function (sliderValue) {
-        return sliderValue;
+        return 1000 - sliderValue * 10;
     };
 
     var timerTickToSlider = function (timerTickValue) {
-        return timerTickValue;
+        return (1000 - timerTickValue) / 10;
     };
 
     that.render = function () {
@@ -284,15 +287,6 @@ Life.LifeView.Rect = function (spec) {
 
     that.height = function () {
         return that.bottom - that.top;
-    };
-
-    that.toString = function () {
-        var res = "Life.LiveView.Rect {";
-        res += "left: " + that.left + ", ";
-        res += "top: " + that.top + ", ";
-        res += "width: " + that.width() + ", ";
-        res += "height: " + that.height() + "}";
-        return res;
     };
 
     return that;

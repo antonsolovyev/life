@@ -3,7 +3,7 @@ var Life = Life || {};
 Life.LifeEngine = function (spec) {
     var that = {};
     _.extend(that, Backbone.Events);
-    var timeout;
+    var timer;
 
     var makeEmptyBoard = function () {
         var res = [];
@@ -29,15 +29,11 @@ Life.LifeEngine = function (spec) {
     };
 
     var startTimer = function () {
-        timeout = setTimeout(function () {
-            handleTimerEvent();
-            clearTimeout(timeout);
-            timeout = setTimeout(startTimer, that.timerTick);
-        }, that.timerTick);
+        timer = setInterval(handleTimerEvent, that.timerTick);
     };
 
     var stopTimer = function () {
-        clearTimeout(timeout);
+        clearInterval(timer);
     };
 
     var iterateBoard = function () {
