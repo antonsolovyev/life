@@ -1,0 +1,31 @@
+<h1>Stored Patterns</h1>
+
+<table>
+    <tr>
+        <td>
+            <table id="patternListTable" border="1">
+                <thead>
+                <th>N</th>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                </thead>
+                <tbody>
+                <% _.each(patternList, function(pattern, idx) { %>
+                <tr>
+                    <td><%= idx + 1 %></td>
+                    <td><%= pattern.get('name') %></td>
+                    <td><button class="loadPatternButton" type="button" id="<%= pattern.get('id') %>">Load</button></td>
+                    <td><button class="deletePatternButton" type="button" id="<%= pattern.get('id') %>">Delete</button></td>
+                </tr>
+                <% }); %>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button id="cancelButton"><span>Cancel</span></button>
+        </td>
+    </tr>
+</table>
