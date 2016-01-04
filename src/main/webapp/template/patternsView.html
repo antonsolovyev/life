@@ -1,22 +1,35 @@
-<h1>Stored Patterns</h1>
-
-<table>
+<table id="patternsViewPanel">
     <tr>
-        <td>
-            <table id="patternListTable" border="1">
-                <thead>
-                <th>#</th>
+        <td class="ui-widget ui-widget-header">
+            <h1>Stored Patterns</h1>
+        </td>
+    </tr>
+    <tr>
+        <td id="patternsListCell" class="ui-widget">
+            <table id="patternsList">
+                <thead class="ui-widget-header">
+                <th></th>
                 <th>Name</th>
                 <th>Load</th>
                 <th>Delete</th>
                 </thead>
-                <tbody>
+                <tbody class="ui-widget-content">
                 <% _.each(patternList, function(pattern, idx) { %>
                 <tr>
                     <td><%= idx + 1 %></td>
                     <td><%= pattern.get('name') %></td>
-                    <td><button class="loadPatternButton" type="button" id="<%= pattern.get('id') %>">Load</button></td>
-                    <td><button class="deletePatternButton" type="button" id="<%= pattern.get('id') %>">Delete</button></td>
+                    <td>
+                        <button class="loadPatternButton ui-button ui-corner-all ui-button-text-only
+                            ui-state-hover" type="button" id="<%= pattern.get('id') %>">
+                            <span class="ui-button-text">Load</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button class="deletePatternButton ui-button ui-corner-all ui-button-text-only
+                            ui-state-hover" type="button" id="<%= pattern.get('id') %>">
+                            <span class="ui-button-text">Delete</span>
+                        </button>
+                    </td>
                 </tr>
                 <% }); %>
                 </tbody>
@@ -24,8 +37,11 @@
         </td>
     </tr>
     <tr>
-        <td>
-            <button id="cancelButton"><span>Cancel</span></button>
+        <td class="ui-widget">
+            <button id="cancelButton" class="ui-button ui-corner-all ui-button-text-only
+                ui-state-hover" autofocus>
+                <span class="ui-button-text">Cancel</span>
+            </button>
         </td>
     </tr>
 </table>

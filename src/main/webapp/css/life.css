@@ -1,6 +1,86 @@
-body {
+html, body {
     height: 100%;
     padding: 0px;
     margin: 0px;
     border: 0px;
+    position: relative;
+}
+
+/* lifeView */
+
+#lifeViewPanel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#lifeViewPanel td, #lifeViewPanel {
+    border: 1px solid black;
+    border-collapse: collapse;
+    vertical-align: top;
+    text-align: center;
+}
+
+canvas {
+    vertical-align: middle;
+}
+
+#controlTable, #controlTable td {
+    border: 0px;
+}
+
+#controlTable td {
+    padding: .5em;
+    padding-bottom: .4em;
+    padding-top: .4em;
+}
+
+#controlTable button {
+    width: 100%;
+}
+
+/* patternsView */
+
+#patternsViewPanel {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#patternsViewPanel, #patternsViewPanel td, #patternsViewPanel th {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#patternsViewPanel td, #patternsViewPanel th {
+    padding: .5em;
+    padding-bottom: .4em;
+    padding-top: .4em;
+}
+
+td#patternsListCell {
+    padding: 0px;
+}
+
+#patternsList {
+    border-collapse: collapse;
+}
+
+#patternsList tr:first-child th {
+    border-top: 0;
+}
+
+#patternsList tr:last-child td {
+    border-bottom: 0;
+}
+
+#patternsList tr td:first-child, #patternsList tr th:first-child {
+    border-left: 0;
+}
+
+#patternsList tr td:last-child, #patternsList tr th:last-child {
+    border-right: 0;
 }

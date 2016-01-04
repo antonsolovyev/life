@@ -24,12 +24,12 @@ Life.PatternsView = function (spec) {
     };
 
     var handleLoadPatternButton = function (e) {
-        messageBus.trigger("loadPattern", patternList.get(e.target.id));
+        messageBus.trigger("loadPattern", patternList.get(e.currentTarget.id));
         messageBus.trigger("showLifeView");
     };
 
     var handleDeletePatternButton = function (e) {
-        var pattern = patternList.get(e.target.id);
+        var pattern = patternList.get(e.currentTarget.id);
         pattern.destroy({wait: true});
     };
 
