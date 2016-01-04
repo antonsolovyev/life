@@ -27,7 +27,7 @@ canvas {
 }
 
 #controlTable, #controlTable td {
-    border: 0px;
+    border: 0;
 }
 
 #controlTable td {
@@ -41,6 +41,7 @@ canvas {
 }
 
 /* patternsView */
+
 #patternViewControls {
     padding: .5em;
     padding-bottom: .4em;
