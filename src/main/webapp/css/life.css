@@ -41,46 +41,20 @@ canvas {
 }
 
 /* patternsView */
-
-#patternsViewPanel {
-    position: absolute;
-    top: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-#patternsViewPanel, #patternsViewPanel td, #patternsViewPanel th {
-    border: 1px solid black;
-    border-collapse: collapse;
-    text-align: center;
-}
-
-#patternsViewPanel td, #patternsViewPanel th {
+#patternViewControls {
     padding: .5em;
     padding-bottom: .4em;
     padding-top: .4em;
 }
 
-td#patternsListCell {
-    padding: 0px;
+#patternViewHeader, #patternViewControls {
+    text-align: center;
 }
 
-#patternsList {
-    border-collapse: collapse;
+#patternViewBody .buttonCell {
+    text-align: center;
 }
 
-#patternsList tr:first-child th {
-    border-top: 0;
-}
-
-#patternsList tr:last-child td {
-    border-bottom: 0;
-}
-
-#patternsList tr td:first-child, #patternsList tr th:first-child {
-    border-left: 0;
-}
-
-#patternsList tr td:last-child, #patternsList tr th:last-child {
-    border-right: 0;
+#patternViewBody .nameCell {
+    width: 80%;
 }

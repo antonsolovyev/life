@@ -45,6 +45,11 @@ Life.PatternsView = function (spec) {
                 success: function (patternList) {
                     var template = _.template(_.getFromUrl('/template/patternsView.html'));
                     that.$el.html(template({'patternList': patternList.models}));
+                    $("#patternsList").DataTable({
+                        "columnDefs": [
+                            { "orderable": false, "targets": ["noSort"] }
+                        ]
+                    });
                 },
                 error: function () {
                     alert('Error retrieving patterns!');
