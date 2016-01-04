@@ -68,6 +68,9 @@ Life.Main = function () {
             router.navigate("patterns", {'trigger': true});
             //patternsView.render();
         });
+        messageBus.on("viewRenderError", function (view) {
+            history.back();
+        });
 
         lifeView = new Life.LifeView({
             messageBus: messageBus, boardWidth: initParams.boardWidth,

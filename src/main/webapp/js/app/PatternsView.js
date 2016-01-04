@@ -53,6 +53,7 @@ Life.PatternsView = function (spec) {
                 },
                 error: function () {
                     alert('Error retrieving patterns!');
+                    messageBus.trigger("viewRenderError", that);
                 }
             });
     };
