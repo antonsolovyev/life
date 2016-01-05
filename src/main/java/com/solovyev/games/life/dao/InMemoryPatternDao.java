@@ -32,7 +32,7 @@ public class InMemoryPatternDao implements PatternDao
 
     private Long add(Pattern pattern)
     {
-        patterns.put(nextId, new Pattern(nextId, pattern.getName(), pattern.getLocations()));
+        patterns.put(nextId, new Pattern(nextId, pattern.getName(), new Date(), pattern.getLocations()));
         Long res = nextId;
         nextId++;
         return res;

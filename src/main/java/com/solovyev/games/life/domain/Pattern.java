@@ -1,24 +1,27 @@
 package com.solovyev.games.life.domain;
 
 
+import java.util.Date;
 import java.util.Set;
 
 public class Pattern
 {
     private final Long id;
     private final String name;
+    private Date creationDate;
     private final Set<Location> locations;
 
-    public Pattern(Long id, String name, Set<Location> locations)
+    public Pattern(Long id, String name, Date creationDate, Set<Location> locations)
     {
         this.id = id;
         this.name = name;
+        this.creationDate = creationDate;
         this.locations = locations;
     }
 
     private Pattern()
     {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     public Long getId()
@@ -29,6 +32,11 @@ public class Pattern
     public String getName()
     {
         return name;
+    }
+
+    public Date getCreationDate()
+    {
+        return creationDate;
     }
 
     public Set<Location> getLocations()
@@ -46,6 +54,8 @@ public class Pattern
 
         if (id != null ? !id.equals(pattern.id) : pattern.id != null) return false;
         if (name != null ? !name.equals(pattern.name) : pattern.name != null) return false;
+        if (creationDate != null ? !creationDate.equals(pattern.creationDate) : pattern.creationDate != null)
+            return false;
         return locations != null ? locations.equals(pattern.locations) : pattern.locations == null;
 
     }
@@ -55,6 +65,7 @@ public class Pattern
     {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
         result = 31 * result + (locations != null ? locations.hashCode() : 0);
         return result;
     }
@@ -65,6 +76,7 @@ public class Pattern
         return "Pattern{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", creationDate=" + creationDate +
                 ", locations=" + locations +
                 '}';
     }

@@ -22,10 +22,7 @@ import javax.servlet.ServletContextEvent;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyLong;
@@ -121,8 +118,8 @@ public class LifeResourceTest extends JerseyTest
 
         List<Pattern> res = new ArrayList<Pattern>()
         {{
-            add(new Pattern(null, "Default pattern", locations));
-            add(new Pattern(null, "Flip", locations2));
+            add(new Pattern(null, "Default pattern", new Date(), locations));
+            add(new Pattern(null, "Flip", new Date(), locations2));
         }};
 
         return res;
@@ -156,7 +153,7 @@ public class LifeResourceTest extends JerseyTest
             add(new Pattern.Location(1, 2));
         }};
 
-        Pattern pattern = new Pattern(null, "Updated flip", locations);
+        Pattern pattern = new Pattern(null, "Updated flip", new Date(), locations);
 
         target("/patterns").request().post(Entity.entity(pattern, MediaType.APPLICATION_JSON_TYPE));
 
@@ -172,7 +169,7 @@ public class LifeResourceTest extends JerseyTest
             add(new Pattern.Location(1, 2));
         }};
 
-        Pattern pattern = new Pattern(null, "Updated flip", locations);
+        Pattern pattern = new Pattern(null, "Updated flip", new Date(), locations);
 
         target("/patterns/1").request().put(Entity.entity(pattern, MediaType.APPLICATION_JSON_TYPE));
 
