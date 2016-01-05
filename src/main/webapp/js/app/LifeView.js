@@ -3,7 +3,7 @@ var Life = Life || {};
 Life.LifeView = function (spec) {
     var T = Backbone.View.extend(
         {
-            el: "#page",
+            el: spec.el,
             events: {
                 "click #startStopButton": function () {
                     handleStartStopButton();

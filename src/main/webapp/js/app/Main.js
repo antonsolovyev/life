@@ -8,8 +8,7 @@ Life.Main = function () {
     var that = {};
     var messageBus;
     var router;
-    var lifeView;
-    var patternsView;
+    var views = [];
 
     var amendUnderscore = function () {
         _.mixin(
@@ -62,31 +61,44 @@ Life.Main = function () {
         messageBus = new Life.MessageBus();
         messageBus.on("showLifeView", function () {
             router.navigate("", {'trigger': true});
-            //lifeView.render();
         });
         messageBus.on("showPatternsView", function () {
             router.navigate("patterns", {'trigger': true});
-            //patternsView.render();
         });
         messageBus.on("viewRenderError", function (view) {
             history.back();
         });
 
-        lifeView = new Life.LifeView({
-            messageBus: messageBus, boardWidth: initParams.boardWidth,
-            boardHeight: initParams.boardHeight, timerTick: initParams.timerTick
+        var lifeView = new Life.LifeView({
+            messageBus: messageBus,
+            el: "#lifeView",
+            boardWidth: initParams.boardWidth,
+            boardHeight: initParams.boardHeight,
+            timerTick: initParams.timerTick
         });
-        patternsView = new Life.PatternsView({messageBus: messageBus});
+        views.push(lifeView);
+        var patternsView = new Life.PatternsView({
+            messageBus: messageBus,
+            el: "#patternsView"}
+        );
+        views.push(patternsView);
 
-        //messageBus.trigger("showLifeView");
         router = new Life.Router();
         router.on("route:home", function () {
-            lifeView.render();
+            showView(lifeView);
         });
         router.on("route:patterns", function () {
-            patternsView.render();
+            showView(patternsView);
         });
         Backbone.history.start();
+    };
+
+    var showView = function (view) {
+        for(var i = 0; i < views.length; i++) {
+            $(views[i].el).hide();
+        }
+        $(view.el).show();
+        view.render();
     };
 
     return that;

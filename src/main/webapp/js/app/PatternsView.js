@@ -2,7 +2,7 @@ var Life = Life || {};
 
 Life.PatternsView = function (spec) {
     var T = Backbone.View.extend({
-        el: "#page",
+        el: spec.el,
         events: {
             "click #cancelButton": function () {
                 handleCancelButton();
@@ -40,6 +40,7 @@ Life.PatternsView = function (spec) {
     });
 
     that.render = function () {
+        console.log("PatternsView.render()");
         patternList.fetch(
             {
                 success: function (patternList) {
