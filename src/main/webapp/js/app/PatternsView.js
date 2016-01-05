@@ -35,7 +35,7 @@ Life.PatternsView = function (spec) {
 
     var patternList = new Life.PatternsView.PatternList();
 
-    patternList.on("add remove", function () {
+    patternList.on("remove", function () {
         that.render();
     });
 

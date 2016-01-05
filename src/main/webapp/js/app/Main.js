@@ -93,11 +93,10 @@ Life.Main = function () {
 };
 
 Life.Router = function () {
-    var that = new Backbone.Router(
-        {
+    var that = new Backbone.Router({
             routes: {
-                '': 'home',
-                'patterns': 'patterns'
+                "": "home",
+                patterns: "patterns"
             }
         });
 
