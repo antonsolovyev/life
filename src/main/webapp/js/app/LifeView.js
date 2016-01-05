@@ -18,9 +18,7 @@ Life.LifeView = function (spec) {
                     handleSaveButton();
                 },
                 "input #speedSlider": function (e) {
-                    lifeEngine.stop();
-                    lifeEngine.timerTick = sliderToTimerTick(e.target.value);
-                    lifeEngine.start();
+                    handleSlider(e);
                 },
                 "mousedown #boardCanvas": function (e) {
                     handleBoardClick(e);
@@ -53,6 +51,15 @@ Life.LifeView = function (spec) {
         }
         update();
     });
+
+    var handleSlider = function (e) {
+        var savedGameState = lifeEngine.gameState;
+        lifeEngine.stop();
+        lifeEngine.timerTick = sliderToTimerTick(e.target.value);
+        if(savedGameState === Life.LifeEngine.GameState.RUNNING) {
+            lifeEngine.start();
+        }
+    }
 
     var handlePatternsButton = function () {
         messageBus.trigger("showPatternsView");

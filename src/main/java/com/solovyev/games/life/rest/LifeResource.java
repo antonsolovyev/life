@@ -61,7 +61,7 @@ public class LifeResource
     @Produces({ MediaType.APPLICATION_JSON })
     public Long createPattern(Pattern pattern)
     {
-        return patternDao.createPattern(pattern);
+        return patternDao.createPattern(new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
     }
 
     @PUT
@@ -69,7 +69,7 @@ public class LifeResource
     @Consumes({ MediaType.APPLICATION_JSON })
     public void updatePattern(@PathParam("id") Long id, Pattern pattern)
     {
-        patternDao.updatePattern(id, pattern);
+        patternDao.updatePattern(id, new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
     }
 
     @DELETE

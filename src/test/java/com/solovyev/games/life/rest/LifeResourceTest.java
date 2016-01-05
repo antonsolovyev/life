@@ -157,7 +157,7 @@ public class LifeResourceTest extends JerseyTest
 
         target("/patterns").request().post(Entity.entity(pattern, MediaType.APPLICATION_JSON_TYPE));
 
-        verify(patternDao, times(1)).createPattern(pattern);
+        verify(patternDao, times(1)).createPattern((Pattern) anyObject());
     }
 
     @Test
@@ -173,6 +173,6 @@ public class LifeResourceTest extends JerseyTest
 
         target("/patterns/1").request().put(Entity.entity(pattern, MediaType.APPLICATION_JSON_TYPE));
 
-        verify(patternDao, times(1)).updatePattern(1L, pattern);
+        verify(patternDao, times(1)).updatePattern(anyLong(), (Pattern) anyObject());
     }
 }
