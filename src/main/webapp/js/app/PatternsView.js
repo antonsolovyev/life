@@ -35,7 +35,7 @@ Life.PatternsView = function (spec) {
 
     var patternList = new Life.PatternsView.PatternList();
 
-    patternList.on("remove", function () {
+    patternList.on("add remove", function () {
         that.render();
     });
 
@@ -54,7 +54,8 @@ Life.PatternsView = function (spec) {
                 error: function () {
                     alert('Error retrieving patterns!');
                     messageBus.trigger("viewRenderError", that);
-                }
+                },
+                reset: true
             });
     };
 
