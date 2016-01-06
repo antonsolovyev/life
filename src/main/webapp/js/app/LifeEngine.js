@@ -17,15 +17,8 @@ Life.LifeEngine = function (spec) {
         return res;
     };
 
-    var modulo = function (spec) {
-        var n = spec.n;
-        var mod = spec.mod;
-
-        var res = n % mod;
-        if (res < 0) {
-            return res + mod;
-        }
-        return res;
+    var modulo = function (n, mod) {
+        return n >= 0 ? n % mod : mod + n % mod;
     };
 
     var startTimer = function () {
@@ -47,8 +40,8 @@ Life.LifeEngine = function (spec) {
                         if (k === 0 && l === 0) {
                             continue;
                         }
-                        var x = modulo({n: i + k, mod: that.width});
-                        var y = modulo({n: j + l, mod: that.height});
+                        var x = modulo(i + k, that.width);
+                        var y = modulo(j + l, that.height);
                         if (that.board[x][y] > 0) {
                             liveNeighborCount += 1;
                         }
