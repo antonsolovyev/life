@@ -47,7 +47,7 @@ Life.LifeView = function (spec) {
         var locations = pattern.get('locations');
         for (var i = 0; i < locations.length; i++) {
             var location = locations[i];
-            lifeEngine.board[location.x][location.y] = 1;
+            lifeEngine.setCell(location.x + lifeEngine.width / 2, location.y + lifeEngine.width / 2, 1);
         }
         update();
     });
@@ -89,7 +89,7 @@ Life.LifeView = function (spec) {
                         var locations = [];
                         for (var i = 0; i < lifeEngine.width; i++) {
                             for (var j = 0; j < lifeEngine.height; j++) {
-                                if (lifeEngine.board[i][j] !== 0) {
+                                if (lifeEngine.getCell(i, j) !== 0) {
                                     locations.push({x: i, y: j});
                                 }
                             }
@@ -121,11 +121,11 @@ Life.LifeView = function (spec) {
     var handleBoardClick = function (e) {
         lifeEngine.stop();
         var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
-        if (lifeEngine.board[boardLocation.x][boardLocation.y] === 0) {
-            lifeEngine.board[boardLocation.x][boardLocation.y] = 1;
+        if (lifeEngine.getCell(boardLocation.x, boardLocation.y) === 0) {
+            lifeEngine.setCell(boardLocation.x, boardLocation.y, 1);
         }
         else {
-            lifeEngine.board[boardLocation.x][boardLocation.y] = 0;
+            lifeEngine.setCell(boardLocation.x, boardLocation.y, 0);
         }
         update();
     };
@@ -174,8 +174,8 @@ Life.LifeView = function (spec) {
     var drawBoard = function () {
         for (var i = 0; i < lifeEngine.width; i++) {
             for (var j = 0; j < lifeEngine.height; j++) {
-                if (lifeEngine.board[i][j] > 0) {
-                    drawCell(i, j, lifeEngine.board[i][j]);
+                if (lifeEngine.getCell(i, j) > 0) {
+                    drawCell(i, j, lifeEngine.getCell(i, j));
                 }
             }
         }

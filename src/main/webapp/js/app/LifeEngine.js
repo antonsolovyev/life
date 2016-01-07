@@ -4,6 +4,7 @@ Life.LifeEngine = function (spec) {
     var that = {};
     _.extend(that, Backbone.Events);
     var timer;
+    var board;
 
     var makeEmptyBoard = function () {
         var res = [];
@@ -42,18 +43,18 @@ Life.LifeEngine = function (spec) {
                         }
                         var x = modulo(i + k, that.width);
                         var y = modulo(j + l, that.height);
-                        if (that.board[x][y] > 0) {
+                        if (board[x][y] > 0) {
                             liveNeighborCount += 1;
                         }
                     }
                 }
 
-                if (that.board[i][j] > 0) {
+                if (board[i][j] > 0) {
                     if (liveNeighborCount < 2 || liveNeighborCount > 3) {
                         nextBoard[i][j] = 0;
                     }
                     else {
-                        nextBoard[i][j] = that.board[i][j] + 1;
+                        nextBoard[i][j] = board[i][j] + 1;
                     }
                 }
                 else {
@@ -64,7 +65,7 @@ Life.LifeEngine = function (spec) {
             }
         }
 
-        that.board = nextBoard;
+        board = nextBoard;
 
         that.generation += 1;
     };
@@ -100,8 +101,16 @@ Life.LifeEngine = function (spec) {
 
     that.reset = function () {
         that.stop();
-        that.board = makeEmptyBoard();
+        board = makeEmptyBoard();
         postUpdate();
+    };
+
+    that.setCell = function (x, y, value) {
+        board[modulo(x, that.width)][modulo(y, that.width)] = value;
+    };
+
+    that.getCell = function (x, y) {
+        return board[modulo(x, that.width)][modulo(y, that.width)];
     };
 
     that.toString = function () {
@@ -114,7 +123,7 @@ Life.LifeEngine = function (spec) {
         for (var j = 0; j < that.height; j++) {
             res += "    ";
             for (var i = 0; i < that.width; i++) {
-                if (that.board[i][j] > 0) {
+                if (board[i][j] > 0) {
                     res += "x ";
                 }
                 else {
@@ -132,7 +141,8 @@ Life.LifeEngine = function (spec) {
     that.timerTick = spec.timerTick;
     that.gameState = Life.LifeEngine.GameState.STOPPED;
     that.generation = 0;
-    that.board = makeEmptyBoard();
+
+    board = makeEmptyBoard();
 
     return that;
 };
