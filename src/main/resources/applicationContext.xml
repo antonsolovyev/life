@@ -15,13 +15,13 @@
     </bean>
 
     <bean id="lifeResource" class="com.solovyev.games.life.rest.LifeResource">
-        <constructor-arg index="0" ref="datastorePatternDao"/>
+        <constructor-arg index="0" ref="inMemoryPatternDao"/>
         <constructor-arg index="1" value="${boardWidth}"/>
         <constructor-arg index="2" value="${boardHeight}"/>
         <constructor-arg index="3" value="${timerTick}"/>
     </bean>
 
-    <bean id="datastorePatternDao" class="com.solovyev.games.life.dao.DatastorePatternDao"/>
+    <!--<bean id="datastorePatternDao" class="com.solovyev.games.life.dao.DatastorePatternDao"/>-->
 
     <bean id="inMemoryPatternDao" class="com.solovyev.games.life.dao.InMemoryPatternDao">
         <constructor-arg index="0" value="${patterns}"/>

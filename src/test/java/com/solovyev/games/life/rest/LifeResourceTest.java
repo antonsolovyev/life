@@ -76,6 +76,7 @@ public class LifeResourceTest extends JerseyTest
         ServletDeploymentContext.Builder builder = ServletDeploymentContext.forServlet(ServletContainer.class);
 
         builder.initParam("jersey.config.server.provider.packages", "com.solovyev.games.life");
+        builder.initParam("jersey.config.server.provider.classnames", "org.glassfish.jersey.media.multipart.MultiPartFeature");
         builder.contextParam("contextConfigLocation", "classpath:applicationContext-lifeResource-test.xml");
         builder.addListener(ContextSavingContextLoaderListener.class);
         builder.addListener(RequestContextListener.class);
@@ -101,7 +102,7 @@ public class LifeResourceTest extends JerseyTest
 
     private List<Pattern> makePatternList()
     {
-        final Set<Pattern.Location> locations = new HashSet<Pattern.Location>()
+        final List<Pattern.Location> locations = new ArrayList<Pattern.Location>()
         {{
             add(new Pattern.Location(0, 2));
             add(new Pattern.Location(1, 2));
@@ -109,7 +110,7 @@ public class LifeResourceTest extends JerseyTest
             add(new Pattern.Location(1, 0));
             add(new Pattern.Location(2, 1));
         }};
-        final Set<Pattern.Location> locations2 = new HashSet<Pattern.Location>()
+        final List<Pattern.Location> locations2 = new ArrayList<Pattern.Location>()
         {{
             add(new Pattern.Location(1, 1));
             add(new Pattern.Location(1, 2));
@@ -147,7 +148,7 @@ public class LifeResourceTest extends JerseyTest
     {
         List<Pattern> patterns = makePatternList();
 
-        final Set<Pattern.Location> locations = new HashSet<Pattern.Location>()
+        final List<Pattern.Location> locations = new ArrayList<Pattern.Location>()
         {{
             add(new Pattern.Location(1, 1));
             add(new Pattern.Location(1, 2));
@@ -163,7 +164,7 @@ public class LifeResourceTest extends JerseyTest
     @Test
     public void testUpdatePattern() throws Exception
     {
-        final Set<Pattern.Location> locations = new HashSet<Pattern.Location>()
+        final List<Pattern.Location> locations = new ArrayList<Pattern.Location>()
         {{
             add(new Pattern.Location(1, 1));
             add(new Pattern.Location(1, 2));

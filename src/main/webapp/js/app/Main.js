@@ -104,6 +104,42 @@ Life.Main = function () {
     return that;
 };
 
+Life.Util = {
+    messageBox: function (spec) {
+        var title = spec.title;
+        var message = spec.message;
+        var callback = spec.callback;
+
+        var template = _.template(_.getFromUrl("/template/messageBox.html"));
+        $("body").append(template({
+                title: title,
+                message: message
+        }));
+
+        $("#messageBox").dialog({
+            dialogClass: "no-close",
+            resizable: false,
+            modal: true,
+            buttons:
+            {
+                "OK": function()
+                {
+                    if(callback) {
+                        callback();
+                    }
+                    jQuery('#messageBox').dialog('close');
+                }
+            },
+            close: function() // this ensures that even if close button is used the dialog is removed
+            {
+                jQuery('#messageBox').dialog('destroy');
+                jQuery('#messageBox').remove();
+            }
+        });
+
+    }
+}
+
 Life.Router = function () {
     var that = new Backbone.Router({
             routes: {

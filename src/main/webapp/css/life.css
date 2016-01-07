@@ -6,6 +6,15 @@ html, body {
     position: relative;
 }
 
+.no-close .ui-dialog-titlebar-close
+{
+    display: none;
+}
+
+#messageBox h3 {
+    text-align: center;
+}
+
 /* lifeView */
 
 #lifeViewPanel {
@@ -58,4 +67,8 @@ canvas {
 
 #patternViewBody .nameCell {
     width: 80%;
+}
+
+#fileInput {
+    max-width: 100%;
 }

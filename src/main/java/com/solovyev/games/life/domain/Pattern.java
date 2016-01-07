@@ -2,6 +2,7 @@ package com.solovyev.games.life.domain;
 
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class Pattern
@@ -9,9 +10,9 @@ public class Pattern
     private final Long id;
     private final String name;
     private Date creationDate;
-    private final Set<Location> locations;
+    private final List<Location> locations;
 
-    public Pattern(Long id, String name, Date creationDate, Set<Location> locations)
+    public Pattern(Long id, String name, Date creationDate, List<Location> locations)
     {
         this.id = id;
         this.name = name;
@@ -39,7 +40,7 @@ public class Pattern
         return creationDate;
     }
 
-    public Set<Location> getLocations()
+    public List<Location> getLocations()
     {
         return locations;
     }

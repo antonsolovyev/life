@@ -42,7 +42,7 @@ public class InMemoryPatternDao implements PatternDao
     {
         if(!patterns.containsKey(id))
         {
-            throw new RuntimeException("non-existent id");
+            throw new IllegalArgumentException("Non-existent id");
         }
 
         return patterns.get(id);
@@ -62,7 +62,7 @@ public class InMemoryPatternDao implements PatternDao
     {
         if(!patterns.containsKey(id))
         {
-            throw new RuntimeException("non-existent id");
+            throw new IllegalArgumentException("Non-existent id");
         }
 
         patterns.put(id, pattern);
@@ -72,7 +72,7 @@ public class InMemoryPatternDao implements PatternDao
     {
         if(!patterns.containsKey(id))
         {
-            throw new RuntimeException("non-existent id");
+            throw new IllegalArgumentException("Non-existent id");
         }
 
         patterns.remove(id);

@@ -81,7 +81,7 @@ public class DatastorePatternDao implements PatternDao
 
         List<Long> locationsX = (List<Long>) entity.getProperty(LOCATIONS_X_PROPERTY);
         List<Long> locationsY = (List<Long>) entity.getProperty(LOCATIONS_Y_PROPERTY);
-        Set<Pattern.Location> locations = new HashSet<Pattern.Location>();
+        List<Pattern.Location> locations = new ArrayList<Pattern.Location>();
         for(int i = 0; i < locationsX.size(); i++)
         {
             locations.add(new Pattern.Location(locationsX.get(i).intValue(), locationsY.get(i).intValue()));
@@ -99,7 +99,7 @@ public class DatastorePatternDao implements PatternDao
         }
         catch(EntityNotFoundException e)
         {
-            throw new RuntimeException("non-existent id", e);
+            throw new IllegalArgumentException("Non-existent id", e);
         }
     }
 
@@ -139,7 +139,7 @@ public class DatastorePatternDao implements PatternDao
         }
         catch (EntityNotFoundException e)
         {
-            throw new RuntimeException("non-existent id", e);
+            throw new IllegalArgumentException("Non-existent id", e);
         }
         finally
         {
@@ -165,7 +165,7 @@ public class DatastorePatternDao implements PatternDao
         }
         catch (EntityNotFoundException e)
         {
-            throw new RuntimeException("non-existent id", e);
+            throw new IllegalArgumentException("Non-existent id", e);
         }
         finally
         {

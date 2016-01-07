@@ -7,6 +7,9 @@ Life.PatternsView = function (spec) {
             "click #cancelButton": function () {
                 handleCancelButton();
             },
+            "click #uploadButton": function () {
+                handleUploadButton();
+            },
             "click .loadPatternButton": function (e) {
                 handleLoadPatternButton(e);
             },
@@ -33,6 +36,48 @@ Life.PatternsView = function (spec) {
         pattern.destroy({wait: true});
     };
 
+    var handleUploadButton = function () {
+        $("body").append(_.getFromUrl("/template/uploadDialog.html"));
+        $("#uploadDialog").dialog({
+            resizable: false,
+            modal: true,
+            close: function () {
+                $("#uploadDialog").dialog("destroy");
+                $("#uploadDialog").remove();
+            },
+            buttons: {
+                Upload: function () {
+                    var formData = new FormData($("#uploadForm")[0]);
+                    $.ajax({
+                        url: "/rest/upload",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        type: 'POST',
+                        success: function () {
+                            Life.Util.messageBox({
+                                title: "Success",
+                                message: "Pattern uploaded!"
+                            });
+                            that.render();
+                        },
+                        error: function (request, status, error) {
+                            if(request.status && request.status === 400) {
+                                alert(request.responseText);
+                            } else {
+                                alert("Error uploading file!");
+                            }
+                        }
+                    });
+                    $("#uploadDialog").dialog("close");
+                },
+                Cancel: function () {
+                    $("#uploadDialog").dialog("close");
+                }
+            }
+        });
+    };
+
     var patternList = new Life.PatternsView.PatternList();
 
     patternList.on("add remove", function () {
@@ -40,12 +85,11 @@ Life.PatternsView = function (spec) {
     });
 
     that.render = function () {
-        console.log("PatternsView.render()");
         patternList.fetch(
             {
                 success: function (patternList) {
-                    var template = _.template(_.getFromUrl('/template/patternsView.html'));
-                    that.$el.html(template({'patternList': patternList.models}));
+                    var template = _.template(_.getFromUrl("/template/patternsView.html"));
+                    that.$el.html(template({patternList: patternList.models}));
                     $("#patternsList").DataTable({
                         "columnDefs": [
                             { "orderable": false, "targets": ["noSort"] }
@@ -53,7 +97,7 @@ Life.PatternsView = function (spec) {
                     });
                 },
                 error: function () {
-                    alert('Error retrieving patterns!');
+                    alert("Error retrieving patterns!");
                     messageBus.trigger("viewRenderError", that);
                 },
                 reset: true
