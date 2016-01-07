@@ -143,15 +143,9 @@ public class LifeResource
                 LOGGER.info("File upload, pattern name: " + name + ", file name: " + fileDisposition.getFileName() +
                         ", stream: " + inputStream);
 
-                String name2 = name.trim();
-                if(StringUtils.isBlank(name2))
-                {
-                    name2 = FilenameUtils.getBaseName(fileDisposition.getFileName());
-                }
+                List<String> lines = IOUtils.readLines(inputStream);
 
-                List<String> strings = IOUtils.readLines(inputStream);
-
-                Pattern pattern = parsePattern(name2, strings);
+                Pattern pattern = parsePattern(getPatternName(name, fileDisposition.getFileName()), lines);
 
                 LOGGER.info("Uploaded pattern: " + pattern);
 
@@ -160,8 +154,23 @@ public class LifeResource
         });
     }
 
+    private String getPatternName(String name, String fileName)
+    {
+        String res = name.trim();
+        if(StringUtils.isBlank(res))
+        {
+            res = FilenameUtils.getBaseName(fileName);
+        }
+        return res;
+    }
+
     private Pattern parsePattern(String name, List<String> lines)
     {
+        if(lines.size() == 0)
+        {
+            throw new IllegalArgumentException("Empty pattern");
+        }
+
         if (lines.get(0).contains("Life 1.06"))
         {
             return parsePatternLife106(name, lines);
@@ -200,7 +209,7 @@ public class LifeResource
             throw new IllegalArgumentException("Error parsing cell location: " + e.getMessage(), e);
         }
     }
-    
+
     private <V> V wrapExceptions(Callable<V> callable)
     {
         try

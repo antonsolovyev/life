@@ -38,6 +38,7 @@ Life.PatternsView = function (spec) {
 
     var handleUploadButton = function () {
         $("body").append(_.getFromUrl("/template/uploadDialog.html"));
+
         $("#uploadDialog").dialog({
             resizable: false,
             modal: true,
@@ -47,29 +48,32 @@ Life.PatternsView = function (spec) {
             },
             buttons: {
                 Upload: function () {
-                    var formData = new FormData($("#uploadForm")[0]);
-                    $.ajax({
-                        url: "/rest/upload",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        type: 'POST',
-                        success: function () {
-                            Life.Util.messageBox({
-                                title: "Success",
-                                message: "Pattern uploaded!"
-                            });
-                            that.render();
-                        },
-                        error: function (request, status, error) {
-                            if(request.status && request.status === 400) {
-                                alert(request.responseText);
-                            } else {
-                                alert("Error uploading file!");
-                            }
+                        if($("#fileInput")[0].files.length === 0) {
+                            return;
                         }
-                    });
-                    $("#uploadDialog").dialog("close");
+                        var formData = new FormData($("#uploadForm")[0]);
+                        $.ajax({
+                            url: "/rest/upload",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            type: 'POST',
+                            success: function () {
+                                Life.Util.messageBox({
+                                    title: "Success",
+                                    message: "Pattern uploaded!"
+                                });
+                                that.render();
+                            },
+                            error: function (request, status, error) {
+                                if (request.status && request.status === 400) {
+                                    alert(request.responseText);
+                                } else {
+                                    alert("Error uploading file!");
+                                }
+                            }
+                        });
+                        $("#uploadDialog").dialog("close");
                 },
                 Cancel: function () {
                     $("#uploadDialog").dialog("close");
