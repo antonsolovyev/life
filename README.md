@@ -1,6 +1,14 @@
 #Conway's Game of Life.
 
+Documentation:
+
 https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
+
+http://www.conwaylife.com/wiki/Main_Page
+
+Live application:
+
+http://cwaylife.appspot.com/
 
 ##Notes
 
