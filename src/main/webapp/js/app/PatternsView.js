@@ -15,7 +15,7 @@ Life.PatternsView = function (spec) {
             },
             "click .deletePatternButton": function (e) {
                 handleDeletePatternButton(e);
-            }
+            },
         }
     });
     var that = new T();
@@ -27,12 +27,14 @@ Life.PatternsView = function (spec) {
     };
 
     var handleLoadPatternButton = function (e) {
-        messageBus.trigger("loadPattern", patternList.get(e.currentTarget.id));
+        var patternId = $(e.currentTarget).data("id");
+        messageBus.trigger("loadPattern", patternList.get(patternId));
         messageBus.trigger("showLifeView");
     };
 
     var handleDeletePatternButton = function (e) {
-        var pattern = patternList.get(e.currentTarget.id);
+        var patternId = $(e.currentTarget).data("id");
+        var pattern = patternList.get(patternId);
         pattern.destroy({wait: true});
     };
 
@@ -98,6 +100,20 @@ Life.PatternsView = function (spec) {
                         "columnDefs": [
                             { "orderable": false, "targets": ["noSort"] }
                         ]
+                    });
+                    $("#patternsList .nameCell").editable(function (value, settings) {
+                        var patternId = $(this).data("id");
+                        var model = patternList.get(patternId);
+                        if(!value.trim()) {
+                            return;
+                        }
+                        model.set({name: value});
+                        model.save();
+                        return(value);
+                    }, {
+                        indicator: 'Saving...',
+                        tooltip: 'Click to edit...',
+                        type: 'text'
                     });
                 },
                 error: function () {

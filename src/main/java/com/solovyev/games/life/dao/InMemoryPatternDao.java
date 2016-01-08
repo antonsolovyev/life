@@ -65,7 +65,7 @@ public class InMemoryPatternDao implements PatternDao
             throw new IllegalArgumentException("Non-existent id");
         }
 
-        patterns.put(id, pattern);
+        patterns.put(id, new Pattern(id, pattern.getName(), pattern.getCreationDate(), pattern.getLocations()));
     }
 
     public void deletePattern(Long id)
