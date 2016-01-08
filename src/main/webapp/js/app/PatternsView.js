@@ -96,11 +96,6 @@ Life.PatternsView = function (spec) {
                 success: function (patternList) {
                     var template = _.template(_.getFromUrl("/template/patternsView.html"));
                     that.$el.html(template({patternList: patternList.models}));
-                    $("#patternsList").DataTable({
-                        "columnDefs": [
-                            { "orderable": false, "targets": ["noSort"] }
-                        ]
-                    });
                     $("#patternsList .nameCell").editable(function (value, settings) {
                         var patternId = $(this).data("id");
                         var model = patternList.get(patternId);
@@ -114,6 +109,11 @@ Life.PatternsView = function (spec) {
                         indicator: 'Saving...',
                         tooltip: 'Click to edit...',
                         type: 'text'
+                    });
+                    $("#patternsList").DataTable({
+                        "columnDefs": [
+                            { "orderable": false, "targets": ["noSort"] }
+                        ]
                     });
                 },
                 error: function () {
