@@ -35,7 +35,34 @@ Life.PatternsView = function (spec) {
     var handleDeletePatternButton = function (e) {
         var patternId = $(e.currentTarget).data("id");
         var pattern = patternList.get(patternId);
-        pattern.destroy({wait: true});
+
+        var template = _.template(_.getFromUrl("/template/confirmDeletePatternDialog.html"));
+        $("body").append(template({name: pattern.get("name")}));
+
+        $("#confirmDeletePatternDialog").dialog({
+            resizable: false,
+            modal: true,
+            close: function () {
+                $("#confirmDeletePatternDialog").dialog("destroy");
+                $("#confirmDeletePatternDialog").remove();
+            },
+            // Use array to guarantee button order!
+            buttons: [
+                {
+                    text: "Cancel",
+                    click: function () {
+                        $("#confirmDeletePatternDialog").dialog("close");
+                    }
+                },
+                {
+                    text: "Delete",
+                    click: function () {
+                        pattern.destroy({wait: true});
+                        $("#confirmDeletePatternDialog").dialog("close");
+                    }
+                }
+            ]
+        });
     };
 
     var handleUploadButton = function () {
@@ -48,9 +75,11 @@ Life.PatternsView = function (spec) {
                 $("#uploadDialog").dialog("destroy");
                 $("#uploadDialog").remove();
             },
-            buttons: {
-                Upload: function () {
-                        if($("#fileInput")[0].files.length === 0) {
+            buttons: [
+                {
+                    text: "Upload",
+                    click: function () {
+                        if ($("#fileInput")[0].files.length === 0) {
                             return;
                         }
                         var formData = new FormData($("#uploadForm")[0]);
@@ -76,11 +105,15 @@ Life.PatternsView = function (spec) {
                             }
                         });
                         $("#uploadDialog").dialog("close");
+                    }
                 },
-                Cancel: function () {
-                    $("#uploadDialog").dialog("close");
+                {
+                    text: "Cancel",
+                    click: function () {
+                        $("#uploadDialog").dialog("close");
+                    }
                 }
-            }
+            ]
         });
     };
 
@@ -99,12 +132,12 @@ Life.PatternsView = function (spec) {
                     $("#patternsList .nameCell").editable(function (value, settings) {
                         var patternId = $(this).data("id");
                         var model = patternList.get(patternId);
-                        if(!value.trim()) {
+                        if (!value.trim()) {
                             return;
                         }
                         model.set({name: value});
                         model.save();
-                        return(value);
+                        return (value);
                     }, {
                         indicator: 'Saving...',
                         tooltip: 'Click to edit...',
@@ -112,7 +145,7 @@ Life.PatternsView = function (spec) {
                     });
                     $("#patternsList").DataTable({
                         "columnDefs": [
-                            { "orderable": false, "targets": ["noSort"] }
+                            {"orderable": false, "targets": ["noSort"]}
                         ]
                     });
                 },
