@@ -16,18 +16,34 @@ html, body {
 }
 
 /* lifeView */
+
+#lifeView .table {
+    display: table;
+}
+
+#lifeView .tr {
+    display: table-row;
+}
+
+#lifeView .td {
+    display: table-cell;
+}
+
 #lifeView {
     height: 100%;
     width: 100%;
+    display: table;
 }
 
 #lifeViewPanel {
-    height: 100%;
     vertical-align: middle;
+}
+
+#lifeViewBody {
     margin: auto;
 }
 
-#lifeViewBody, #lifeViewBody td {
+#lifeViewBody, #lifeViewBody .td {
     border: 1px solid black;
     border-collapse: collapse;
     vertical-align: top;
@@ -39,9 +55,8 @@ html, body {
     border: 0;
 }
 
-#lifeViewControls, #lifeViewControls td {
-    border: 0;
-    border-collapse: collapse;
+#lifeViewControls div {
+    text-align: center;
     padding: 1em;
     padding-bottom: .5em;
     padding-top: .5em;
