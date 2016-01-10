@@ -38,8 +38,6 @@ Life.LifeView = function (spec) {
     var GRID_COLOR = '#D0D0D0';
     var lifeEngine;
     var canvas;
-    var windowWidth;
-    var windowHeight;
     var cellSize;
 
     messageBus.on("loadPattern", function (pattern) {
@@ -59,7 +57,7 @@ Life.LifeView = function (spec) {
         if(savedGameState === Life.LifeEngine.GameState.RUNNING) {
             lifeEngine.start();
         }
-    }
+    };
 
     var handlePatternsButton = function () {
         messageBus.trigger("showPatternsView");
@@ -142,9 +140,13 @@ Life.LifeView = function (spec) {
         $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(lifeEngine.timerTick)});
         $("#startStopButonSpan").text(getStartStopButtonText());
 
+        canvas = $("#boardCanvas")[0];
         if (!canvas) {
             return;
         }
+        cellSize = getCellSize($(window).width() - $("#controlTable").width(), $(window).height());
+        canvas.height = getCanvasHeight();
+        canvas.width = getCanvasWidth();
 
         cleanCanvas();
         drawBoard();
@@ -190,7 +192,7 @@ Life.LifeView = function (spec) {
         }
     };
 
-    var getCellSize = function () {
+    var getCellSize = function (windowHeight, windowWidth) {
         return round(Math.min(windowHeight * SCREEN_SIZE_RATIO / lifeEngine.height,
             windowWidth * SCREEN_SIZE_RATIO / (lifeEngine.width)));
     };
@@ -205,9 +207,9 @@ Life.LifeView = function (spec) {
     };
 
     var getBoardLocation = function (x, y) {
-        var x = Math.floor(x / cellSize) % lifeEngine.width;
-        var y = Math.floor(y / cellSize) % lifeEngine.height;
-        return {x: x, y: y}
+        var boardX = Math.floor(x / cellSize) % lifeEngine.width;
+        var boardY = Math.floor(y / cellSize) % lifeEngine.height;
+        return {x: boardX, y: boardY}
     };
 
     var getCanvasHeight = function () {
@@ -227,18 +229,9 @@ Life.LifeView = function (spec) {
         return drawRect(getCellRect(x, y), CELL_COLOR);
     };
 
-    var initCellSize = function () {
-        cellSize = getCellSize();
-    };
-
     var cleanCanvas = function () {
         drawRect(new Life.LifeView.Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
             FIELD_COLOR);
-    };
-
-    var initCanvasSize = function () {
-        canvas.height = getCanvasHeight();
-        canvas.width = getCanvasWidth();
     };
 
     var getStartStopButtonText = function () {
@@ -264,12 +257,9 @@ Life.LifeView = function (spec) {
     that.render = function () {
         that.$el.html(_.getFromUrl("/template/lifeView.html"));
 
-        canvas = $("#boardCanvas")[0];
-        windowHeight = $(window).height();
-        windowWidth = $(window).width();
-
-        initCellSize();
-        initCanvasSize();
+        $(window).on("resize", function () {
+            update();
+        });
 
         update();
     };

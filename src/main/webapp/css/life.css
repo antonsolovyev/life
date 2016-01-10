@@ -28,21 +28,23 @@ html, body {
     border: 1px solid black;
     border-collapse: collapse;
     vertical-align: top;
-    text-align: center;
+    padding: 0;
 }
 
-canvas {
-    vertical-align: middle;
+#boardCanvas {
+    display: block;
+    border: 0;
 }
 
 #controlTable, #controlTable td {
     border: 0;
+    border-collapse: collapse;
 }
 
 #controlTable td {
-    padding: .5em;
-    padding-bottom: .4em;
-    padding-top: .4em;
+    padding: 1em;
+    padding-bottom: .5em;
+    padding-top: .5em;
 }
 
 #controlTable button {
