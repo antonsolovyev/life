@@ -1,47 +1,53 @@
 <table id="lifeViewPanel">
     <tr>
         <td>
-            <canvas id="boardCanvas">Canvas is not supported!</canvas>
-        </td>
-        <td>
-            <table id="controlTable">
+            <table id="lifeViewBody">
                 <tr>
                     <td>
-                        <button type="button" class="controlButton ui-button ui-widget ui-corner-all
-                            ui-button-text-only ui-state-hover" id="startStopButton">
-                            <span id="startStopButonSpan" class="ui-button-text">Start</span>
-                        </button>
+                        <canvas id="boardCanvas">Canvas is not supported!</canvas>
                     </td>
-                </tr>
-                <tr>
                     <td>
-                        <button type="button" class="controlButton ui-button ui-widget ui-corner-all
-                            ui-button-text-only ui-state-hover" id="resetButton">
-                            <span id="resetButonSpan" class="ui-button-text">Reset</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="button" class="controlButton ui-button ui-widget ui-corner-all
-                            ui-button-text-only ui-state-hover" id="patternsButton">
-                            <span id="patternsButtonSpan" class="ui-button-text">Patterns</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="button" class="controlButton ui-button ui-widget ui-corner-all
-                            ui-button-text-only ui-state-hover" id="saveButton">
-                            <span id="saveButtonSpan" class="ui-button-text">Save</span>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="range" id="speedSlider">
-                        <div id="speedSliderSpan" class="ui-widget">Speed</div>
-                        </input>
+                        <table id="lifeViewControls">
+                            <tr>
+                                <td>
+                                    <button type="button" class="controlButton ui-button ui-widget ui-corner-all
+                                        ui-button-text-only ui-state-hover" id="startStopButton">
+                                        <span id="startStopButonSpan" class="ui-button-text">Start</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="controlButton ui-button ui-widget ui-corner-all
+                                        ui-button-text-only ui-state-hover" id="resetButton">
+                                        <span id="resetButonSpan" class="ui-button-text">Reset</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="controlButton ui-button ui-widget ui-corner-all
+                                        ui-button-text-only ui-state-hover" id="patternsButton">
+                                        <span id="patternsButtonSpan" class="ui-button-text">Patterns</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="controlButton ui-button ui-widget ui-corner-all
+                                        ui-button-text-only ui-state-hover" id="saveButton">
+                                        <span id="saveButtonSpan" class="ui-button-text">Save</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="range" id="speedSlider">
+                                    <div id="speedSliderSpan" class="ui-widget">Speed</div>
+                                    </input>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
