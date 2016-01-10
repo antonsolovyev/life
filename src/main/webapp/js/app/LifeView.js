@@ -144,7 +144,7 @@ Life.LifeView = function (spec) {
         if (!canvas) {
             return;
         }
-        cellSize = getCellSize($(window).width() - $("#controlTable").width(), $(window).height());
+        cellSize = getCellSize($(window).width() - $("#lifeViewControls").width(), $(window).height());
         canvas.height = getCanvasHeight();
         canvas.width = getCanvasWidth();
 
