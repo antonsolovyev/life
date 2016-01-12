@@ -9,6 +9,7 @@ Life.LifeView = function (spec) {
                     handleStartStopButton();
                 },
                 "click #resetButton": function () {
+                    boardSize = initialBoardSize;
                     lifeEngine.reset();
                 },
                 "click #patternsButton": function () {
@@ -16,6 +17,12 @@ Life.LifeView = function (spec) {
                 },
                 "click #saveButton": function () {
                     handleSaveButton();
+                },
+                "click #zoomInButton": function () {
+                    handleZoomInButton();
+                },
+                "click #zoomOutButton": function () {
+                    handleZoomOutButton();
                 },
                 "input #speedSlider": function (e) {
                     handleSlider(e);
@@ -28,8 +35,8 @@ Life.LifeView = function (spec) {
     var that = new T();
 
     var messageBus = spec.messageBus;
-    var boardWidth = spec.boardWidth;
-    var boardHeight = spec.boardHeight;
+    var initialBoardSize = Math.pow(2, spec.boardSizeLog2);
+    var boardSize = initialBoardSize;
     var timerTick = spec.timerTick;
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
@@ -50,6 +57,20 @@ Life.LifeView = function (spec) {
         }
         update();
     });
+
+    var handleZoomInButton = function () {
+        if(boardSize <= 2) {
+            return;
+        }
+        boardSize /= 2;
+        update();
+    };
+
+    var handleZoomOutButton = function () {
+        boardSize *= 2;
+        update();
+        console.log("cellGap: " + cellGap);
+    };
 
     var handleSlider = function (e) {
         var savedGameState = lifeEngine.gameState;
@@ -86,8 +107,8 @@ Life.LifeView = function (spec) {
                     var name = $('#nameField').val();
                     if (name && name !== "") {
                         var locations = [];
-                        for (var i = 0; i < boardWidth; i++) {
-                            for (var j = 0; j < boardHeight; j++) {
+                        for (var i = 0; i < boardSize; i++) {
+                            for (var j = 0; j < boardSize; j++) {
                                 if (lifeEngine.getCell(i, j).live) {
                                     locations.push({x: i, y: j});
                                 }
@@ -151,12 +172,18 @@ Life.LifeView = function (spec) {
         canvas.width = getCanvasWidth();
 
         cleanCanvas();
-        drawBoard();
         drawGrid();
+        drawBoard();
     };
 
     var drawGrid = function () {
-        for (var i = 0; i <= boardWidth; i++) {
+        if(cellGap === 0) {
+            drawRect(new Life.LifeView.Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
+                GRID_COLOR);
+            return;
+        }
+
+        for (var i = 0; i <= boardSize; i++) {
             canvas.getContext('2d').beginPath();
             canvas.getContext('2d').lineWidth = cellGap;
             canvas.getContext('2d').strokeStyle = GRID_COLOR;
@@ -165,7 +192,7 @@ Life.LifeView = function (spec) {
             canvas.getContext('2d').stroke();
         }
 
-        for (var i = 0; i <= boardHeight; i++) {
+        for (var i = 0; i <= boardSize; i++) {
             canvas.getContext('2d').beginPath();
             canvas.getContext('2d').lineWidth = cellGap;
             canvas.getContext('2d').strokeStyle = GRID_COLOR;
@@ -176,54 +203,48 @@ Life.LifeView = function (spec) {
     };
 
     var drawBoard = function () {
-        for (var i = 0; i < boardWidth; i++) {
-            for (var j = 0; j < boardHeight; j++) {
-                if (lifeEngine.getCell(i, j).live) {
-                    drawCell(i, j, lifeEngine.getCell(i, j));
-                }
-            }
-        }
-    };
-
-    var round = function (value) {
-        if (value > 0) {
-            return Math.floor(value);
-        }
-        else {
-            return Math.ceil(value);
+        var cells = lifeEngine.getLiveCells();
+        for(var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+            drawCell(cell.x, cell.y, cell.age);
         }
     };
 
     var getCellSize = function (windowHeight, windowWidth) {
-        return round(Math.min(windowHeight * SCREEN_SIZE_RATIO / boardHeight,
-            windowWidth * SCREEN_SIZE_RATIO / (boardWidth)));
+        var res = Math.floor(Math.min(windowHeight * SCREEN_SIZE_RATIO / boardSize,
+            windowWidth * SCREEN_SIZE_RATIO / (boardSize)));
+        if(res < 1) {
+            return 1;
+        }
+        return res;
     };
 
     var getCellGap = function (cellSize) {
         return Math.floor(cellSize / GAP_RATIO);
-    }
+    };
 
     var getCellRect = function (x, y) {
+        x = x + boardSize / 2;
+        y = y + boardSize / 2;
         var left = x * cellSize + cellGap;
         var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
         var bottom = (y + 1) * cellSize;
-
         return new Life.LifeView.Rect({left: left, top: top, right: right, bottom: bottom});
     };
 
     var getBoardLocation = function (x, y) {
-        var boardX = Math.floor(x / cellSize) % boardWidth;
-        var boardY = Math.floor(y / cellSize) % boardHeight;
+        var boardX = Math.floor(x / cellSize) % boardSize - boardSize / 2;
+        var boardY = Math.floor(y / cellSize) % boardSize - boardSize / 2;
         return {x: boardX, y: boardY}
     };
 
     var getCanvasHeight = function () {
-        return boardHeight * cellSize + cellGap;
+        return boardSize * cellSize + cellGap;
     };
 
     var getCanvasWidth = function () {
-        return boardWidth * cellSize + cellGap;
+        return boardSize * cellSize + cellGap;
     };
 
     var drawRect = function (rect, color) {
@@ -231,7 +252,7 @@ Life.LifeView = function (spec) {
         canvas.getContext('2d').fillRect(rect.left, rect.top, rect.width(), rect.height());
     };
 
-    var drawCell = function (x, y, cell) {
+    var drawCell = function (x, y, age) {
         return drawRect(getCellRect(x, y), CELL_COLOR);
     };
 

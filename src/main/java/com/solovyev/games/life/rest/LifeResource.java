@@ -1,8 +1,17 @@
 package com.solovyev.games.life.rest;
 
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.Callable;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.solovyev.games.life.dao.PatternDao;
 import com.solovyev.games.life.domain.InitParams;
 import com.solovyev.games.life.domain.Pattern;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,12 +20,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.Callable;
 
 @Component
 @Path("/")
@@ -25,15 +28,13 @@ public class LifeResource
     private static final Logger LOGGER = Logger.getLogger(LifeResource.class.getName());
 
     private final PatternDao patternDao;
-    private final Integer boardWidth;
-    private final Integer boardHeight;
+    private final Integer boardSizeLog2;
     private final Integer timerTick;
 
-    public LifeResource(PatternDao patternDao, Integer boardWidth, Integer boardHeight, Integer timerTick)
+    public LifeResource(PatternDao patternDao, Integer boardSizeLog2, Integer timerTick)
     {
         this.patternDao = patternDao;
-        this.boardWidth = boardWidth;
-        this.boardHeight = boardHeight;
+        this.boardSizeLog2 = boardSizeLog2;
         this.timerTick = timerTick;
 
         LOGGER.info("created LifeResource: " + this);
@@ -45,12 +46,12 @@ public class LifeResource
     public InitParams getInitParams()
     {
         return wrapExceptions(new Callable<InitParams>()
-        {
-            public InitParams call() throws Exception
-            {
-                return new InitParams(boardWidth, boardHeight, timerTick);
-            }
-        });
+                {
+                    public InitParams call() throws Exception
+                    {
+                        return new InitParams(boardSizeLog2, timerTick);
+                    }
+                });
     }
 
     @GET
@@ -59,12 +60,12 @@ public class LifeResource
     public List<Pattern> readPatterns()
     {
         return wrapExceptions(new Callable<List<Pattern>>()
-        {
-            public List<Pattern> call() throws Exception
-            {
-                return patternDao.readPatterns();
-            }
-        });
+                {
+                    public List<Pattern> call() throws Exception
+                    {
+                        return patternDao.readPatterns();
+                    }
+                });
     }
 
     @GET
@@ -73,12 +74,12 @@ public class LifeResource
     public Pattern readPattern(@PathParam("id") final Long id)
     {
         return wrapExceptions(new Callable<Pattern>()
-        {
-            public Pattern call() throws Exception
-            {
-                return patternDao.readPattern(id);
-            }
-        });
+                {
+                    public Pattern call() throws Exception
+                    {
+                        return patternDao.readPattern(id);
+                    }
+                });
     }
 
     @POST
@@ -88,12 +89,13 @@ public class LifeResource
     public Long createPattern(final Pattern pattern)
     {
         return wrapExceptions(new Callable<Long>()
-        {
-            public Long call() throws Exception
-            {
-                return patternDao.createPattern(new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
-            }
-        });
+                {
+                    public Long call() throws Exception
+                    {
+                        return patternDao.createPattern(
+                                new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
+                    }
+                });
     }
 
     @PUT
@@ -102,14 +104,15 @@ public class LifeResource
     public void updatePattern(@PathParam("id") final Long id, final Pattern pattern)
     {
         wrapExceptions(new Callable<Void>()
-        {
-            public Void call() throws Exception
             {
-                patternDao.updatePattern(id, new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
+                public Void call() throws Exception
+                {
+                    patternDao.updatePattern(id,
+                        new Pattern(null, pattern.getName(), new Date(), pattern.getLocations()));
 
-                return null;
-            }
-        });
+                    return null;
+                }
+            });
     }
 
     @DELETE
@@ -119,54 +122,56 @@ public class LifeResource
     public void deletePattern(@PathParam("id") final Long id)
     {
         wrapExceptions(new Callable<Void>()
-        {
-            public Void call() throws Exception
             {
-                patternDao.deletePattern(id);
+                public Void call() throws Exception
+                {
+                    patternDao.deletePattern(id);
 
-                return null;
-            }
-        });
+                    return null;
+                }
+            });
     }
 
     @POST
     @Path("/upload")
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
     @Produces({ MediaType.APPLICATION_JSON })
-    public Long upload(@FormDataParam("name") final String name, @FormDataParam("file") final InputStream inputStream,
-                       @FormDataParam("file") final FormDataContentDisposition fileDisposition)
+    public Long upload(@FormDataParam("name") final String name,
+        @FormDataParam("file") final InputStream inputStream,
+        @FormDataParam("file") final FormDataContentDisposition fileDisposition)
     {
-        return  wrapExceptions(new Callable<Long>()
-        {
-            public Long call() throws Exception
-            {
-                LOGGER.info("File upload, pattern name: " + name + ", file name: " + fileDisposition.getFileName() +
-                        ", stream: " + inputStream);
+        return wrapExceptions(new Callable<Long>()
+                {
+                    public Long call() throws Exception
+                    {
+                        LOGGER.info("File upload, pattern name: " + name + ", file name: " + fileDisposition.getFileName() +
+                            ", stream: " + inputStream);
 
-                List<String> lines = IOUtils.readLines(inputStream);
+                        List<String> lines = IOUtils.readLines(inputStream);
 
-                Pattern pattern = parsePattern(getPatternName(name, fileDisposition.getFileName()), lines);
+                        Pattern pattern = parsePattern(getPatternName(name, fileDisposition.getFileName()), lines);
 
-                LOGGER.info("Uploaded pattern: " + pattern);
+                        LOGGER.info("Uploaded pattern: " + pattern);
 
-                return patternDao.createPattern(pattern);
-            }
-        });
+                        return patternDao.createPattern(pattern);
+                    }
+                });
     }
 
     private String getPatternName(String name, String fileName)
     {
         String res = name.trim();
-        if(StringUtils.isBlank(res))
+        if (StringUtils.isBlank(res))
         {
             res = FilenameUtils.getBaseName(fileName);
         }
+
         return res;
     }
 
     private Pattern parsePattern(String name, List<String> lines)
     {
-        if(lines.size() == 0)
+        if (lines.size() == 0)
         {
             throw new IllegalArgumentException("Empty pattern");
         }
@@ -202,9 +207,10 @@ public class LifeResource
 
                 locations.add(new Pattern.Location(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1])));
             }
+
             return new Pattern(null, name, new Date(), locations);
         }
-        catch(NumberFormatException e)
+        catch (NumberFormatException e)
         {
             throw new IllegalArgumentException("Error parsing cell location: " + e.getMessage(), e);
         }
@@ -216,13 +222,13 @@ public class LifeResource
         {
             return callable.call();
         }
-        catch(IllegalArgumentException iae)
+        catch (IllegalArgumentException iae)
         {
             throw new WebApplicationException(iae,
-                    Response.status(
-                            Response.Status.BAD_REQUEST).entity(iae.getMessage()).type(MediaType.TEXT_PLAIN).build());
+                Response.status(
+                    Response.Status.BAD_REQUEST).entity(iae.getMessage()).type(MediaType.TEXT_PLAIN).build());
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             LOGGER.warn("Error processing file upload", e);
 

@@ -77,7 +77,7 @@ Life.LifeEngine = function (spec) {
 
         that.generation += 1;
 
-        console.log("generation: " + that.generation + ", cell number: " + _.keys(board));
+        //console.log("generation: " + that.generation + ", cell number: " + _.keys(board));
     };
 
     var handleTimerEvent = function () {
@@ -126,6 +126,17 @@ Life.LifeEngine = function (spec) {
         }
         return new Life.LifeEngine.Cell({x: x, y: y, live: false});
     };
+
+    that.getLiveCells = function () {
+        var res = [];
+        for(var key in board) {
+            var cell = board[key];
+            if(cell.live) {
+                res.push(cell);
+            }
+        }
+        return res;
+    }
 
     that.timerTick = spec.timerTick;
     that.gameState = Life.LifeEngine.GameState.STOPPED;

@@ -72,8 +72,7 @@ Life.Main = function () {
         var lifeView = new Life.LifeView({
             messageBus: messageBus,
             el: "#lifeView",
-            boardWidth: initParams.boardWidth,
-            boardHeight: initParams.boardHeight,
+            boardSizeLog2: initParams.boardSizeLog2,
             timerTick: initParams.timerTick
         });
         views.push(lifeView);
