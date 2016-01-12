@@ -34,18 +34,19 @@ Life.LifeView = function (spec) {
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
-    var CELL_GAP = 2;
+    var GAP_RATIO = 6;
     var GRID_COLOR = '#D0D0D0';
     var lifeEngine;
     var canvas;
     var cellSize;
+    var cellGap;
 
     messageBus.on("loadPattern", function (pattern) {
         lifeEngine.reset();
         var locations = pattern.get('locations');
         for (var i = 0; i < locations.length; i++) {
             var location = locations[i];
-            lifeEngine.setCell(location.x + lifeEngine.width / 2, location.y + lifeEngine.width / 2, 1);
+            lifeEngine.setCell(new Life.LifeEngine.Cell({x: location.x, y: location.y, live: true, age: 0}));
         }
         update();
     });
@@ -85,9 +86,9 @@ Life.LifeView = function (spec) {
                     var name = $('#nameField').val();
                     if (name && name !== "") {
                         var locations = [];
-                        for (var i = 0; i < lifeEngine.width; i++) {
-                            for (var j = 0; j < lifeEngine.height; j++) {
-                                if (lifeEngine.getCell(i, j) !== 0) {
+                        for (var i = 0; i < boardWidth; i++) {
+                            for (var j = 0; j < boardHeight; j++) {
+                                if (lifeEngine.getCell(i, j).live) {
                                     locations.push({x: i, y: j});
                                 }
                             }
@@ -119,17 +120,17 @@ Life.LifeView = function (spec) {
     var handleBoardClick = function (e) {
         lifeEngine.stop();
         var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
-        if (lifeEngine.getCell(boardLocation.x, boardLocation.y) === 0) {
-            lifeEngine.setCell(boardLocation.x, boardLocation.y, 1);
+        if (!lifeEngine.getCell(boardLocation.x, boardLocation.y).live) {
+            lifeEngine.setCell(new Life.LifeEngine.Cell({x: boardLocation.x, y: boardLocation.y, live: true, age: 0}));
         }
         else {
-            lifeEngine.setCell(boardLocation.x, boardLocation.y, 0);
+            lifeEngine.setCell(new Life.LifeEngine.Cell({x: boardLocation.x, y: boardLocation.y, live: false}));
         }
         update();
     };
 
     var initLifeEngine = function () {
-        lifeEngine = new Life.LifeEngine({width: boardWidth, height: boardHeight, timerTick: timerTick});
+        lifeEngine = new Life.LifeEngine({timerTick: timerTick});
 
         lifeEngine.on("update", function (lifeEngine) {
             update();
@@ -145,6 +146,7 @@ Life.LifeView = function (spec) {
             return;
         }
         cellSize = getCellSize($(window).width() - $("#lifeViewControls").width(), $(window).height());
+        cellGap = getCellGap(cellSize);
         canvas.height = getCanvasHeight();
         canvas.width = getCanvasWidth();
 
@@ -154,29 +156,29 @@ Life.LifeView = function (spec) {
     };
 
     var drawGrid = function () {
-        for (var i = 0; i <= lifeEngine.width; i++) {
+        for (var i = 0; i <= boardWidth; i++) {
             canvas.getContext('2d').beginPath();
-            canvas.getContext('2d').lineWidth = CELL_GAP;
+            canvas.getContext('2d').lineWidth = cellGap;
             canvas.getContext('2d').strokeStyle = GRID_COLOR;
-            canvas.getContext('2d').moveTo(CELL_GAP / 2 + i * cellSize, 0);
-            canvas.getContext('2d').lineTo(CELL_GAP / 2 + i * cellSize, getCanvasHeight());
+            canvas.getContext('2d').moveTo(cellGap / 2 + i * cellSize, 0);
+            canvas.getContext('2d').lineTo(cellGap / 2 + i * cellSize, getCanvasHeight());
             canvas.getContext('2d').stroke();
         }
 
-        for (var i = 0; i <= lifeEngine.height; i++) {
+        for (var i = 0; i <= boardHeight; i++) {
             canvas.getContext('2d').beginPath();
-            canvas.getContext('2d').lineWidth = CELL_GAP;
+            canvas.getContext('2d').lineWidth = cellGap;
             canvas.getContext('2d').strokeStyle = GRID_COLOR;
-            canvas.getContext('2d').moveTo(0, CELL_GAP / 2 + cellSize * i);
-            canvas.getContext('2d').lineTo(getCanvasWidth(), CELL_GAP / 2 + cellSize * i);
+            canvas.getContext('2d').moveTo(0, cellGap / 2 + cellSize * i);
+            canvas.getContext('2d').lineTo(getCanvasWidth(), cellGap / 2 + cellSize * i);
             canvas.getContext('2d').stroke();
         }
     };
 
     var drawBoard = function () {
-        for (var i = 0; i < lifeEngine.width; i++) {
-            for (var j = 0; j < lifeEngine.height; j++) {
-                if (lifeEngine.getCell(i, j) > 0) {
+        for (var i = 0; i < boardWidth; i++) {
+            for (var j = 0; j < boardHeight; j++) {
+                if (lifeEngine.getCell(i, j).live) {
                     drawCell(i, j, lifeEngine.getCell(i, j));
                 }
             }
@@ -193,13 +195,17 @@ Life.LifeView = function (spec) {
     };
 
     var getCellSize = function (windowHeight, windowWidth) {
-        return round(Math.min(windowHeight * SCREEN_SIZE_RATIO / lifeEngine.height,
-            windowWidth * SCREEN_SIZE_RATIO / (lifeEngine.width)));
+        return round(Math.min(windowHeight * SCREEN_SIZE_RATIO / boardHeight,
+            windowWidth * SCREEN_SIZE_RATIO / (boardWidth)));
     };
 
+    var getCellGap = function (cellSize) {
+        return Math.floor(cellSize / GAP_RATIO);
+    }
+
     var getCellRect = function (x, y) {
-        var left = x * cellSize + CELL_GAP;
-        var top = y * cellSize + CELL_GAP;
+        var left = x * cellSize + cellGap;
+        var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
         var bottom = (y + 1) * cellSize;
 
@@ -207,17 +213,17 @@ Life.LifeView = function (spec) {
     };
 
     var getBoardLocation = function (x, y) {
-        var boardX = Math.floor(x / cellSize) % lifeEngine.width;
-        var boardY = Math.floor(y / cellSize) % lifeEngine.height;
+        var boardX = Math.floor(x / cellSize) % boardWidth;
+        var boardY = Math.floor(y / cellSize) % boardHeight;
         return {x: boardX, y: boardY}
     };
 
     var getCanvasHeight = function () {
-        return lifeEngine.height * cellSize + CELL_GAP;
+        return boardHeight * cellSize + cellGap;
     };
 
     var getCanvasWidth = function () {
-        return lifeEngine.width * cellSize + CELL_GAP;
+        return boardWidth * cellSize + cellGap;
     };
 
     var drawRect = function (rect, color) {
@@ -225,7 +231,7 @@ Life.LifeView = function (spec) {
         canvas.getContext('2d').fillRect(rect.left, rect.top, rect.width(), rect.height());
     };
 
-    var drawCell = function (x, y, value) {
+    var drawCell = function (x, y, cell) {
         return drawRect(getCellRect(x, y), CELL_COLOR);
     };
 

@@ -6,20 +6,9 @@ Life.LifeEngine = function (spec) {
     var timer;
     var board;
 
-    var makeEmptyBoard = function () {
-        var res = [];
-        for (var i = 0; i < that.width; i++) {
-            res[i] = [];
-            for (var j = 0; j < that.height; j++) {
-                res[i][j] = 0;
-            }
-        }
-
-        return res;
-    };
-
-    var modulo = function (n, mod) {
-        return n >= 0 ? n % mod : mod + n % mod;
+    var resetBoard = function () {
+        board = {};
+        that.generation = 0;
     };
 
     var startTimer = function () {
@@ -30,37 +19,56 @@ Life.LifeEngine = function (spec) {
         clearInterval(timer);
     };
 
+    var getNeighbors = function (cell) {
+        var res = [];
+        for(var i = -1; i < 2; i++) {
+            for(var j = -1; j < 2; j++) {
+                if(i === 0 && j === 0) {
+                    continue;
+                }
+                res.push(new Life.LifeEngine.Cell({x: cell.x + i, y: cell.y + j, live: false}));
+            }
+        }
+        return res;
+    };
+
     var iterateBoard = function () {
-        var nextBoard = makeEmptyBoard();
+        var nextBoard = {};
 
-        for (var i = 0; i < that.width; i++) {
-            for (var j = 0; j < that.height; j++) {
-                var liveNeighborCount = 0;
-                for (var k = -1; k < 2; k++) {
-                    for (var l = -1; l < 2; l++) {
-                        if (k === 0 && l === 0) {
-                            continue;
-                        }
-                        var x = modulo(i + k, that.width);
-                        var y = modulo(j + l, that.height);
-                        if (board[x][y] > 0) {
-                            liveNeighborCount += 1;
-                        }
-                    }
+        // Create buffer
+        for(var key in board) {
+            var neighbors = getNeighbors(board[key]);
+            for(var i = 0; i < neighbors.length; i++) {
+                var neighbor = neighbors[i];
+                if (!board[neighbor.key()]) {
+                    board[neighbor.key()] = new Life.LifeEngine.Cell({x: neighbor.x, y: neighbor.y, live: false});
                 }
+            }
+        }
 
-                if (board[i][j] > 0) {
-                    if (liveNeighborCount < 2 || liveNeighborCount > 3) {
-                        nextBoard[i][j] = 0;
-                    }
-                    else {
-                        nextBoard[i][j] = board[i][j] + 1;
-                    }
+        // Calculate next board
+        for(var key in board)
+        {
+            var cell = board[key];
+            var neighbors = getNeighbors(cell);
+
+            var liveNeighborCount = 0
+            for(var i = 0; i < neighbors.length; i++) {
+                var neighbor = neighbors[i];
+                if(board[neighbor.key()] && board[neighbor.key()].live) {
+                    liveNeighborCount += 1;
                 }
-                else {
-                    if (liveNeighborCount === 3) {
-                        nextBoard[i][j] = 1;
-                    }
+            }
+
+            if (cell.live) {
+                if (liveNeighborCount === 2 || liveNeighborCount === 3) {
+                    nextBoard[cell.key()] = new Life.LifeEngine.Cell({x: cell.x, y: cell.y, live: true,
+                        age: (cell.age + 1)});
+                }
+            }
+            else {
+                if (liveNeighborCount === 3) {
+                    nextBoard[cell.key()] = new Life.LifeEngine.Cell({x: cell.x, y: cell.y, live: true, age: 0});
                 }
             }
         }
@@ -68,6 +76,8 @@ Life.LifeEngine = function (spec) {
         board = nextBoard;
 
         that.generation += 1;
+
+        console.log("generation: " + that.generation + ", cell number: " + _.keys(board));
     };
 
     var handleTimerEvent = function () {
@@ -101,48 +111,26 @@ Life.LifeEngine = function (spec) {
 
     that.reset = function () {
         that.stop();
-        board = makeEmptyBoard();
+        resetBoard();
         postUpdate();
     };
 
-    that.setCell = function (x, y, value) {
-        board[modulo(x, that.width)][modulo(y, that.width)] = value;
+    that.setCell = function (cell) {
+        board[cell.key()] = cell;
     };
 
     that.getCell = function (x, y) {
-        return board[modulo(x, that.width)][modulo(y, that.width)];
-    };
-
-    that.toString = function () {
-        var res = "LifeEngine {";
-        res += "width: " + that.width + ", ";
-        res += "height: " + that.height + ", ";
-        res += "gameState: " + that.gameState + ", ";
-        res += "generation: " + that.generation + ", ";
-        res += "board:\n";
-        for (var j = 0; j < that.height; j++) {
-            res += "    ";
-            for (var i = 0; i < that.width; i++) {
-                if (board[i][j] > 0) {
-                    res += "x ";
-                }
-                else {
-                    res += "o ";
-                }
-            }
-            res += "\n";
+        var res = board[new Life.LifeEngine.Cell({x: x, y: y}).key()];
+        if(res) {
+            return res;
         }
-        res += "}";
-        return res;
+        return new Life.LifeEngine.Cell({x: x, y: y, live: false});
     };
 
-    that.width = spec.width;
-    that.height = spec.height;
     that.timerTick = spec.timerTick;
     that.gameState = Life.LifeEngine.GameState.STOPPED;
-    that.generation = 0;
 
-    board = makeEmptyBoard();
+    resetBoard();
 
     return that;
 };
@@ -150,4 +138,19 @@ Life.LifeEngine = function (spec) {
 Life.LifeEngine.GameState = {
     STOPPED: "STOPPED",
     RUNNING: "RUNNING"
+};
+
+Life.LifeEngine.Cell = function (spec) {
+    var that = {};
+
+    that.x = spec.x;
+    that.y = spec.y;
+    that.live = spec.live;
+    that.age = spec.age;
+
+    that.key = function () {
+        return that.x + ":" + that.y;
+    }
+
+    return that;
 };
