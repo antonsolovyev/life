@@ -104,10 +104,6 @@ Life.LifeView = function (spec) {
             lifeEngine.setCell(new Life.LifeEngine.Cell({x: location.x, y: location.y, live: true, age: 0}));
         }
         update();
-        console.log("before: " + new Date());
-        lifeEngine.iterate(1000);
-        console.log("after: " + new Date() + ", live cells: " + lifeEngine.getLiveCells().length);
-        update();
     });
 
     var handleZoomInButton = function () {
