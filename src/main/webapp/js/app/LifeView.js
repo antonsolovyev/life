@@ -10,6 +10,7 @@ Life.LifeView = function (spec) {
                 },
                 "click #resetButton": function () {
                     boardSize = initialBoardSize;
+                    boardCorner = initialBoardCorner;
                     lifeEngine.reset();
                 },
                 "click #patternsButton": function () {
@@ -23,6 +24,22 @@ Life.LifeView = function (spec) {
                 },
                 "click #zoomOutButton": function () {
                     handleZoomOutButton();
+                },
+                "click #panRightButton": function () {
+                    boardCorner = {x: boardCorner.x + boardSize / 2, y: boardCorner.y};
+                    update();
+                },
+                "click #panLeftButton": function () {
+                    boardCorner = {x: boardCorner.x - boardSize / 2, y: boardCorner.y};
+                    update();
+                },
+                "click #panUpButton": function () {
+                    boardCorner = {x: boardCorner.x, y: boardCorner.y - boardSize / 2};
+                    update();
+                },
+                "click #panDownButton": function () {
+                    boardCorner = {x: boardCorner.x, y: boardCorner.y + boardSize / 2};
+                    update();
                 },
                 "input #speedSlider": function (e) {
                     handleSlider(e);
@@ -47,6 +64,8 @@ Life.LifeView = function (spec) {
     var canvas;
     var cellSize;
     var cellGap;
+    var initialBoardCorner = {x: -boardSize / 2, y: -boardSize / 2};
+    var boardCorner = initialBoardCorner;
 
     messageBus.on("loadPattern", function (pattern) {
         lifeEngine.reset();
@@ -69,7 +88,6 @@ Life.LifeView = function (spec) {
     var handleZoomOutButton = function () {
         boardSize *= 2;
         update();
-        console.log("cellGap: " + cellGap);
     };
 
     var handleSlider = function (e) {
@@ -224,8 +242,8 @@ Life.LifeView = function (spec) {
     };
 
     var getCellRect = function (x, y) {
-        x = x + boardSize / 2;
-        y = y + boardSize / 2;
+        x = x - boardCorner.x;
+        y = y - boardCorner.y;
         var left = x * cellSize + cellGap;
         var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
@@ -234,8 +252,8 @@ Life.LifeView = function (spec) {
     };
 
     var getBoardLocation = function (x, y) {
-        var boardX = Math.floor(x / cellSize) % boardSize - boardSize / 2;
-        var boardY = Math.floor(y / cellSize) % boardSize - boardSize / 2;
+        var boardX = Math.floor(x / cellSize) % boardSize + boardCorner.x;
+        var boardY = Math.floor(y / cellSize) % boardSize + boardCorner.y;
         return {x: boardX, y: boardY}
     };
 
