@@ -1,6 +1,30 @@
 var Life = Life || {};
 
 Life.LifeView = function (spec) {
+    var Rect = function (spec) {
+        var that = {};
+
+        that.left = spec.left;
+        that.top = spec.top;
+        that.right = spec.right;
+        that.bottom = spec.bottom;
+
+        that.width = function () {
+            return that.right - that.left;
+        };
+
+        that.height = function () {
+            return that.bottom - that.top;
+        };
+
+        return that;
+    };
+
+    var State = {
+        STOPPED: "STOPPED",
+        RUNNING: "RUNNING"
+    };
+
     var T = Backbone.View.extend(
         {
             el: spec.el,
@@ -11,7 +35,7 @@ Life.LifeView = function (spec) {
                 "click #resetButton": function () {
                     boardSize = initialBoardSize;
                     boardCorner = initialBoardCorner;
-                    lifeEngine.reset();
+                    reset();
                 },
                 "click #patternsButton": function () {
                     handlePatternsButton();
@@ -51,29 +75,38 @@ Life.LifeView = function (spec) {
         });
     var that = new T();
 
-    var messageBus = spec.messageBus;
-    var initialBoardSize = Math.pow(2, spec.boardSizeLog2);
-    var boardSize = initialBoardSize;
-    var timerTick = spec.timerTick;
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
     var GAP_RATIO = 6;
     var GRID_COLOR = '#D0D0D0';
+
+    var messageBus = spec.messageBus;
+    var timerTick = spec.timerTick;
+
+    var initialBoardSize = Math.pow(2, spec.boardSizeLog2);
+    var boardSize = initialBoardSize;
+    var initialBoardCorner = {x: -boardSize / 2, y: -boardSize / 2};
+    var boardCorner = initialBoardCorner;
+
+    var timer;
+    var state = State.STOPPED;
     var lifeEngine;
     var canvas;
     var cellSize;
     var cellGap;
-    var initialBoardCorner = {x: -boardSize / 2, y: -boardSize / 2};
-    var boardCorner = initialBoardCorner;
 
     messageBus.on("loadPattern", function (pattern) {
-        lifeEngine.reset();
+        reset();
         var locations = pattern.get('locations');
         for (var i = 0; i < locations.length; i++) {
             var location = locations[i];
             lifeEngine.setCell(new Life.LifeEngine.Cell({x: location.x, y: location.y, live: true, age: 0}));
         }
+        update();
+        console.log("before: " + new Date());
+        lifeEngine.iterate(1000);
+        console.log("after: " + new Date() + ", live cells: " + lifeEngine.getLiveCells().length);
         update();
     });
 
@@ -91,11 +124,11 @@ Life.LifeView = function (spec) {
     };
 
     var handleSlider = function (e) {
-        var savedGameState = lifeEngine.gameState;
-        lifeEngine.stop();
-        lifeEngine.timerTick = sliderToTimerTick(e.target.value);
-        if(savedGameState === Life.LifeEngine.GameState.RUNNING) {
-            lifeEngine.start();
+        var savedState = state;
+        stop();
+        timerTick = sliderToTimerTick(e.target.value);
+        if(savedState === State.RUNNING) {
+            start();
         }
     };
 
@@ -104,9 +137,8 @@ Life.LifeView = function (spec) {
     };
 
     var handleSaveButton = function () {
-        var savedGameState = lifeEngine.gameState;
-        lifeEngine.stop();
-        update();
+        var savedState = state;
+        stop();
 
         $('body').append(_.template(_.getFromUrl('/template/savePatternDialog.html')));
         $('#savePatternDialog').dialog({
@@ -115,10 +147,9 @@ Life.LifeView = function (spec) {
             close: function () {
                 $('#savePatternDialog').dialog('destroy');
                 $('#savePatternDialog').remove();
-                if (savedGameState === Life.LifeEngine.GameState.RUNNING) {
-                    lifeEngine.start();
+                if (savedState === State.RUNNING) {
+                    start();
                 }
-                update();
             },
             buttons: {
                 Save: function () {
@@ -147,17 +178,16 @@ Life.LifeView = function (spec) {
     };
 
     var handleStartStopButton = function () {
-        if (lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
-            lifeEngine.stop();
+        if (state === State.RUNNING) {
+            stop();
         }
-        else if (lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
-            lifeEngine.start();
+        else if (state === State.STOPPED) {
+            start();
         }
-        update();
     };
 
     var handleBoardClick = function (e) {
-        lifeEngine.stop();
+        stop();
         var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
         if (!lifeEngine.getCell(boardLocation.x, boardLocation.y).live) {
             lifeEngine.setCell(new Life.LifeEngine.Cell({x: boardLocation.x, y: boardLocation.y, live: true, age: 0}));
@@ -168,22 +198,53 @@ Life.LifeView = function (spec) {
         update();
     };
 
-    var initLifeEngine = function () {
-        lifeEngine = new Life.LifeEngine({timerTick: timerTick});
+    var startTimer = function () {
+        timer = setInterval(handleTimerEvent, timerTick);
+    };
 
-        lifeEngine.on("update", function (lifeEngine) {
+    var stopTimer = function () {
+        clearInterval(timer);
+    };
+
+    var handleTimerEvent = function () {
+        if (state !== State.RUNNING) {
+            return;
+        }
+        lifeEngine.iterate();
+        update();
+    };
+
+    var start = function () {
+        if (state === State.STOPPED) {
+            state = State.RUNNING;
             update();
-        });
+            startTimer();
+        }
+    };
+
+    var stop = function () {
+        if (state === State.RUNNING) {
+            stopTimer();
+            state = State.STOPPED;
+            update();
+        }
+    };
+
+    var reset = function () {
+        stop();
+        lifeEngine.reset()
+        update();
     };
 
     var update = function () {
-        $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(lifeEngine.timerTick)});
+        $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(timerTick)});
         $("#startStopButonSpan").text(getStartStopButtonText());
 
         canvas = $("#boardCanvas")[0];
         if (!canvas) {
             return;
         }
+
         cellSize = getCellSize($(window).width() - $("#lifeViewControls").width(), $(window).height());
         cellGap = getCellGap(cellSize);
         canvas.height = getCanvasHeight();
@@ -196,7 +257,7 @@ Life.LifeView = function (spec) {
 
     var drawGrid = function () {
         if(cellGap === 0) {
-            drawRect(new Life.LifeView.Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
+            drawRect(new Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
                 GRID_COLOR);
             return;
         }
@@ -248,7 +309,7 @@ Life.LifeView = function (spec) {
         var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
         var bottom = (y + 1) * cellSize;
-        return new Life.LifeView.Rect({left: left, top: top, right: right, bottom: bottom});
+        return new Rect({left: left, top: top, right: right, bottom: bottom});
     };
 
     var getBoardLocation = function (x, y) {
@@ -275,19 +336,17 @@ Life.LifeView = function (spec) {
     };
 
     var cleanCanvas = function () {
-        drawRect(new Life.LifeView.Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
+        drawRect(new Rect({left: 0, top: 0, right: canvas.width, bottom: canvas.height}),
             FIELD_COLOR);
     };
 
     var getStartStopButtonText = function () {
-        if (lifeEngine.gameState === Life.LifeEngine.GameState.RUNNING) {
+        if (state === State.RUNNING) {
             return "Stop";
-        }
-        else if (lifeEngine.gameState === Life.LifeEngine.GameState.STOPPED) {
+        } else if (state === State.STOPPED) {
             return "Start";
-        }
-        else {
-            throw {name: "Illegal state", message: "Unknown game state"};
+        } else {
+            return "undefined";
         }
     };
 
@@ -309,26 +368,8 @@ Life.LifeView = function (spec) {
         update();
     };
 
-    initLifeEngine();
-
-    return that;
-};
-
-Life.LifeView.Rect = function (spec) {
-    var that = {};
-
-    that.left = spec.left;
-    that.top = spec.top;
-    that.right = spec.right;
-    that.bottom = spec.bottom;
-
-    that.width = function () {
-        return that.right - that.left;
-    };
-
-    that.height = function () {
-        return that.bottom - that.top;
-    };
+    lifeEngine = new Life.LifeEngine();
+    update();
 
     return that;
 };

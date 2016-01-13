@@ -3,20 +3,11 @@ var Life = Life || {};
 Life.LifeEngine = function (spec) {
     var that = {};
     _.extend(that, Backbone.Events);
-    var timer;
     var board;
 
     var resetBoard = function () {
         board = {};
         that.generation = 0;
-    };
-
-    var startTimer = function () {
-        timer = setInterval(handleTimerEvent, that.timerTick);
-    };
-
-    var stopTimer = function () {
-        clearInterval(timer);
     };
 
     var getNeighbors = function (cell) {
@@ -52,7 +43,7 @@ Life.LifeEngine = function (spec) {
             var cell = board[key];
             var neighbors = getNeighbors(cell);
 
-            var liveNeighborCount = 0
+            var liveNeighborCount = 0;
             for(var i = 0; i < neighbors.length; i++) {
                 var neighbor = neighbors[i];
                 if(board[neighbor.key()] && board[neighbor.key()].live) {
@@ -80,43 +71,30 @@ Life.LifeEngine = function (spec) {
         //console.log("generation: " + that.generation + ", cell number: " + _.keys(board));
     };
 
-    var handleTimerEvent = function () {
-        if (that.gameState !== Life.LifeEngine.GameState.RUNNING) {
-            return;
-        }
-
-        iterateBoard();
-        postUpdate();
-    };
-
     var postUpdate = function () {
         that.trigger("update", that);
     };
 
-    that.start = function () {
-        if (that.gameState === Life.LifeEngine.GameState.STOPPED) {
-            that.gameState = Life.LifeEngine.GameState.RUNNING;
-            startTimer();
-            postUpdate();
-        }
-    };
-
-    that.stop = function () {
-        if (that.gameState === Life.LifeEngine.GameState.RUNNING) {
-            stopTimer();
-            that.gameState = Life.LifeEngine.GameState.STOPPED;
-            postUpdate();
-        }
-    };
-
     that.reset = function () {
-        that.stop();
         resetBoard();
+        postUpdate();
+    };
+
+    that.iterate = function (count) {
+        if(!count) {
+            count = 1;
+        }
+
+        for(var i = 0; i < count; i++) {
+            iterateBoard()
+        }
+
         postUpdate();
     };
 
     that.setCell = function (cell) {
         board[cell.key()] = cell;
+        postUpdate();
     };
 
     that.getCell = function (x, y) {
@@ -136,19 +114,11 @@ Life.LifeEngine = function (spec) {
             }
         }
         return res;
-    }
-
-    that.timerTick = spec.timerTick;
-    that.gameState = Life.LifeEngine.GameState.STOPPED;
+    };
 
     resetBoard();
 
     return that;
-};
-
-Life.LifeEngine.GameState = {
-    STOPPED: "STOPPED",
-    RUNNING: "RUNNING"
 };
 
 Life.LifeEngine.Cell = function (spec) {
@@ -161,7 +131,7 @@ Life.LifeEngine.Cell = function (spec) {
 
     that.key = function () {
         return that.x + ":" + that.y;
-    }
+    };
 
     return that;
 };
