@@ -22,6 +22,7 @@
         <commons-io-version>2.4</commons-io-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jasmine-plugin-version>2.1</jasmine-plugin-version>
     </properties>
     <dependencies>      
         <dependency>
@@ -87,11 +88,6 @@
             <version>${mockito-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>${jersey-version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey-version}</version>
@@ -137,6 +133,32 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>${jasmine-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsSrcDir>${basedir}/src/main/webapp/js/app</jsSrcDir>
+                    <sourceIncludes>
+                        <include>**/LifeEngine.js</include>
+                    </sourceIncludes>
+                    <jsTestSrcDir>${basedir}/src/test/javascript</jsTestSrcDir>
+                    <preloadSources>
+                        <source>${basedir}/src/main/webapp/js/lib/jquery.js</source>
+                        <source>${basedir}/src/main/webapp/js/lib/underscore.js</source>
+                        <source>${basedir}/src/main/webapp/js/lib/backbone.js</source>
+                    </preloadSources>
+                    <haltOnFailure>true</haltOnFailure>
+                    <mvnTestSkip>false</mvnTestSkip>
+                </configuration>
             </plugin>
         </plugins>
     </build>

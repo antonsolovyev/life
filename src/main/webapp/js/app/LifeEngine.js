@@ -67,8 +67,6 @@ Life.LifeEngine = function (spec) {
         board = nextBoard;
 
         that.generation += 1;
-
-        //console.log("generation: " + that.generation + ", cell number: " + _.keys(board));
     };
 
     var postUpdate = function () {

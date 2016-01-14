@@ -78,7 +78,7 @@ Life.LifeView = function (spec) {
     var SCREEN_SIZE_RATIO = 0.95;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
-    var GAP_RATIO = 6;
+    var GAP_RATIO = 4;
     var GRID_COLOR = '#D0D0D0';
 
     var messageBus = spec.messageBus;
@@ -112,11 +112,13 @@ Life.LifeView = function (spec) {
         }
         boardSize /= 2;
         update();
+        console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
     var handleZoomOutButton = function () {
         boardSize *= 2;
         update();
+        console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
     var handleSlider = function (e) {
@@ -235,6 +237,7 @@ Life.LifeView = function (spec) {
     var update = function () {
         $("#speedSlider").attr({max: 100, min: 0, step: 1, value: timerTickToSlider(timerTick)});
         $("#startStopButonSpan").text(getStartStopButtonText());
+        $("#generationSpan").text("Generation: " + lifeEngine.generation);
 
         canvas = $("#boardCanvas")[0];
         if (!canvas) {
@@ -287,7 +290,7 @@ Life.LifeView = function (spec) {
 
     var getCellSize = function (windowHeight, windowWidth) {
         var res = Math.floor(Math.min(windowHeight * SCREEN_SIZE_RATIO / boardSize,
-            windowWidth * SCREEN_SIZE_RATIO / (boardSize)));
+            windowWidth * SCREEN_SIZE_RATIO / boardSize));
         if(res < 1) {
             return 1;
         }
