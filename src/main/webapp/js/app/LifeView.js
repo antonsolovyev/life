@@ -26,7 +26,7 @@ Life.LifeView = function (spec) {
     };
 
     var PAN_FACTOR = 8;
-    var SCREEN_SIZE_RATIO = 0.95;
+    var SCREEN_SIZE_RATIO = 0.90;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
     var GAP_RATIO = 4;
@@ -108,17 +108,33 @@ Life.LifeView = function (spec) {
     });
 
     var handleZoomInButton = function () {
-        if(boardSize <= 2) {
-            return;
-        }
         boardSize /= 2;
+
+        if(boardSize <= 2) {
+            $("#zoomInButton").prop("disabled", true);
+        }
+
         update();
+
+        if(cellSize > 1) {
+            $("#zoomOutButton").prop("disabled", false);
+        }
+
         console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
     var handleZoomOutButton = function () {
         boardSize *= 2;
+
+        if(boardSize > 2) {
+            $("#zoomInButton").prop("disabled", false);
+        }
+
         update();
+
+        if(cellSize <= 1) {
+            $("#zoomOutButton").prop("disabled", true);
+        }
         console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
@@ -188,6 +204,9 @@ Life.LifeView = function (spec) {
     var handleBoardClick = function (e) {
         stop();
         var boardLocation = getBoardLocation(e.offsetX, e.offsetY);
+        if(!boardLocation) {
+            return;
+        }
         if (!lifeEngine.getCell(boardLocation.x, boardLocation.y).live) {
             lifeEngine.setCell(new Life.LifeEngine.Cell({x: boardLocation.x, y: boardLocation.y, live: true, age: 0}));
         }
@@ -247,8 +266,8 @@ Life.LifeView = function (spec) {
 
         cellSize = getCellSize($(window).width() - $("#lifeViewControls").width(), $(window).height());
         cellGap = getCellGap(cellSize);
-        canvas.height = getCanvasHeight();
-        canvas.width = getCanvasWidth();
+        canvas.height = getCanvasSize();
+        canvas.width = getCanvasSize();
 
         cleanCanvas();
         drawGrid();
@@ -263,21 +282,13 @@ Life.LifeView = function (spec) {
         }
 
         for (var i = 0; i <= boardSize; i++) {
-            canvas.getContext('2d').beginPath();
-            canvas.getContext('2d').lineWidth = cellGap;
-            canvas.getContext('2d').strokeStyle = GRID_COLOR;
-            canvas.getContext('2d').moveTo(cellGap / 2 + i * cellSize, 0);
-            canvas.getContext('2d').lineTo(cellGap / 2 + i * cellSize, getCanvasHeight());
-            canvas.getContext('2d').stroke();
+            drawRect(new Rect({left: cellSize * i, top: 0, right: cellSize * i + cellGap,
+                bottom: getCanvasSize()}), GRID_COLOR);
         }
 
         for (var i = 0; i <= boardSize; i++) {
-            canvas.getContext('2d').beginPath();
-            canvas.getContext('2d').lineWidth = cellGap;
-            canvas.getContext('2d').strokeStyle = GRID_COLOR;
-            canvas.getContext('2d').moveTo(0, cellGap / 2 + cellSize * i);
-            canvas.getContext('2d').lineTo(getCanvasWidth(), cellGap / 2 + cellSize * i);
-            canvas.getContext('2d').stroke();
+            drawRect(new Rect({top: cellSize * i, left: 0, bottom: cellSize * i + cellGap,
+                right: getCanvasSize()}), GRID_COLOR);
         }
     };
 
@@ -289,9 +300,9 @@ Life.LifeView = function (spec) {
         }
     };
 
-    var getCellSize = function (windowHeight, windowWidth) {
-        var res = Math.floor(Math.min(windowHeight * SCREEN_SIZE_RATIO / boardSize,
-            windowWidth * SCREEN_SIZE_RATIO / boardSize));
+    var getCellSize = function (availableWidth, availableHeight) {
+        var res = Math.floor(Math.min(availableHeight, availableWidth) * SCREEN_SIZE_RATIO *
+            GAP_RATIO / (GAP_RATIO * boardSize + 1));
         if(res < 1) {
             return 1;
         }
@@ -299,12 +310,20 @@ Life.LifeView = function (spec) {
     };
 
     var getCellGap = function (cellSize) {
-        return Math.floor(cellSize / GAP_RATIO);
+        return Math.round(cellSize / GAP_RATIO);
+    };
+
+    var getBoardOffsetX = function () {
+        return boardCenter.x + boardSize / 2;
+    };
+
+    var getBoardOffsetY = function () {
+        return boardCenter.y + boardSize / 2;
     };
 
     var getCellRect = function (x, y) {
-        x = x + boardCenter.x + boardSize / 2;
-        y = y + boardCenter.y + boardSize / 2;
+        x = x + getBoardOffsetX();
+        y = y + getBoardOffsetY();
         var left = x * cellSize + cellGap;
         var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
@@ -313,16 +332,16 @@ Life.LifeView = function (spec) {
     };
 
     var getBoardLocation = function (x, y) {
-        var boardX = Math.floor(x / cellSize) % boardSize - boardCenter.x - boardSize / 2;
-        var boardY = Math.floor(y / cellSize) % boardSize - boardCenter.y - boardSize / 2;
+        if((x % cellSize) < cellGap || (y % cellSize) < cellGap) {
+            return null;
+        }
+
+        var boardX = Math.floor(x / cellSize) - getBoardOffsetX();
+        var boardY = Math.floor(y / cellSize) - getBoardOffsetY();
         return {x: boardX, y: boardY}
     };
 
-    var getCanvasHeight = function () {
-        return boardSize * cellSize + cellGap;
-    };
-
-    var getCanvasWidth = function () {
+    var getCanvasSize = function () {
         return boardSize * cellSize + cellGap;
     };
 

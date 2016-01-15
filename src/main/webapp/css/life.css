@@ -55,14 +55,14 @@ html, body {
     border: 0;
 }
 
-#lifeViewControls div {
+#lifeViewControls div, #lifeViewNav div {
     text-align: center;
     padding: 1em;
     padding-bottom: .5em;
     padding-top: .5em;
 }
 
-#lifeViewControls button {
+#lifeViewControls button, #lifeViewNav button {
     width: 100%;
 }
 
