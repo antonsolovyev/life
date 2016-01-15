@@ -25,6 +25,13 @@ Life.LifeView = function (spec) {
         RUNNING: "RUNNING"
     };
 
+    var PAN_FACTOR = 8;
+    var SCREEN_SIZE_RATIO = 0.95;
+    var FIELD_COLOR = "white";
+    var CELL_COLOR = "black";
+    var GAP_RATIO = 4;
+    var GRID_COLOR = '#D0D0D0';
+
     var T = Backbone.View.extend(
         {
             el: spec.el,
@@ -34,7 +41,7 @@ Life.LifeView = function (spec) {
                 },
                 "click #resetButton": function () {
                     boardSize = initialBoardSize;
-                    boardCorner = initialBoardCorner;
+                    boardCenter = initialBoardCenter;
                     reset();
                 },
                 "click #patternsButton": function () {
@@ -50,19 +57,19 @@ Life.LifeView = function (spec) {
                     handleZoomOutButton();
                 },
                 "click #panRightButton": function () {
-                    boardCorner = {x: boardCorner.x + boardSize / 2, y: boardCorner.y};
+                    boardCenter = {x: boardCenter.x - Math.floor(boardSize / PAN_FACTOR), y: boardCenter.y};
                     update();
                 },
                 "click #panLeftButton": function () {
-                    boardCorner = {x: boardCorner.x - boardSize / 2, y: boardCorner.y};
+                    boardCenter = {x: boardCenter.x + Math.floor(boardSize / PAN_FACTOR), y: boardCenter.y};
                     update();
                 },
                 "click #panUpButton": function () {
-                    boardCorner = {x: boardCorner.x, y: boardCorner.y - boardSize / 2};
+                    boardCenter = {x: boardCenter.x, y: boardCenter.y + Math.floor(boardSize / PAN_FACTOR)};
                     update();
                 },
                 "click #panDownButton": function () {
-                    boardCorner = {x: boardCorner.x, y: boardCorner.y + boardSize / 2};
+                    boardCenter = {x: boardCenter.x, y: boardCenter.y - Math.floor(boardSize / PAN_FACTOR)};
                     update();
                 },
                 "input #speedSlider": function (e) {
@@ -75,19 +82,13 @@ Life.LifeView = function (spec) {
         });
     var that = new T();
 
-    var SCREEN_SIZE_RATIO = 0.95;
-    var FIELD_COLOR = "white";
-    var CELL_COLOR = "black";
-    var GAP_RATIO = 4;
-    var GRID_COLOR = '#D0D0D0';
-
     var messageBus = spec.messageBus;
     var timerTick = spec.timerTick;
 
     var initialBoardSize = Math.pow(2, spec.boardSizeLog2);
     var boardSize = initialBoardSize;
-    var initialBoardCorner = {x: -boardSize / 2, y: -boardSize / 2};
-    var boardCorner = initialBoardCorner;
+    var initialBoardCenter = {x: 0, y: 0};
+    var boardCenter = initialBoardCenter;
 
     var timer;
     var state = State.STOPPED;
@@ -302,8 +303,8 @@ Life.LifeView = function (spec) {
     };
 
     var getCellRect = function (x, y) {
-        x = x - boardCorner.x;
-        y = y - boardCorner.y;
+        x = x + boardCenter.x + boardSize / 2;
+        y = y + boardCenter.y + boardSize / 2;
         var left = x * cellSize + cellGap;
         var top = y * cellSize + cellGap;
         var right = (x + 1) * cellSize;
@@ -312,8 +313,8 @@ Life.LifeView = function (spec) {
     };
 
     var getBoardLocation = function (x, y) {
-        var boardX = Math.floor(x / cellSize) % boardSize + boardCorner.x;
-        var boardY = Math.floor(y / cellSize) % boardSize + boardCorner.y;
+        var boardX = Math.floor(x / cellSize) % boardSize - boardCenter.x - boardSize / 2;
+        var boardY = Math.floor(y / cellSize) % boardSize - boardCenter.y - boardSize / 2;
         return {x: boardX, y: boardY}
     };
 
