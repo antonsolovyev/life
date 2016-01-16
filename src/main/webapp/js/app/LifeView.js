@@ -119,8 +119,6 @@ Life.LifeView = function (spec) {
         if(cellSize > 1) {
             $("#zoomOutButton").prop("disabled", false);
         }
-
-        console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
     var handleZoomOutButton = function () {
@@ -135,7 +133,6 @@ Life.LifeView = function (spec) {
         if(cellSize <= 1) {
             $("#zoomOutButton").prop("disabled", true);
         }
-        console.log("cell size: " + cellSize + ", gap:" + cellGap);
     };
 
     var handleSlider = function (e) {
