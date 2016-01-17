@@ -39,25 +39,9 @@ Life.Main = function () {
                     return res;
                 }
             });
-    }
+    };
 
-    that.main = function () {
-        amendUnderscore();
-
-        var initParams;
-        $.ajax({
-            url: "/rest/init",
-            method: "GET",
-            async: false,
-            success: function (data) {
-                initParams = data;
-            }
-        });
-        if (!initParams) {
-            alert('Error getting init params!');
-            return;
-        }
-
+    var main = function (initParams) {
         messageBus = new Life.MessageBus();
         messageBus.on("showLifeView", function () {
             router.navigate("", {'trigger': true});
@@ -90,6 +74,16 @@ Life.Main = function () {
             showView(patternsView);
         });
         Backbone.history.start();
+    };
+
+    that.main = function () {
+        amendUnderscore();
+
+        $.get("/rest/init").done(function(data) {
+            main(data);
+        }).fail(function () {
+            alert('Error getting init params!');
+        });
     };
 
     var showView = function (view) {
@@ -135,9 +129,8 @@ Life.Util = {
                 jQuery('#messageBox').remove();
             }
         });
-
     }
-}
+};
 
 Life.Router = function () {
     var that = new Backbone.Router({
