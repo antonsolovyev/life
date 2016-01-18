@@ -40,8 +40,6 @@ Life.LifeView = function (spec) {
                     handleStartStopButton();
                 },
                 "click #resetButton": function () {
-                    boardSize = initialBoardSize;
-                    boardCenter = initialBoardCenter;
                     reset();
                 },
                 "click #patternsButton": function () {
@@ -247,6 +245,8 @@ Life.LifeView = function (spec) {
 
     var reset = function () {
         stop();
+        boardSize = initialBoardSize;
+        boardCenter = initialBoardCenter;
         lifeEngine.reset()
         update();
     };
