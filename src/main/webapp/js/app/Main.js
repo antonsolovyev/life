@@ -10,37 +10,6 @@ Life.Main = function () {
     var router;
     var views = [];
 
-    var amendUnderscore = function () {
-        _.mixin(
-            {
-                getFromUrl: function (url) {
-                    var res = "";
-                    this.cache = this.cache || {};
-
-                    if (this.cache[url]) {
-                        res = this.cache[url];
-                    }
-                    else {
-                        $.ajax(
-                            {
-                                url: url,
-                                method: "GET",
-                                async: false,
-                                success: function (data) {
-                                    res = data;
-                                },
-                                error: function () {
-                                    alert('Error retrieving data from a URL!');
-                                }
-                            });
-
-                        this.cache[url] = res;
-                    }
-                    return res;
-                }
-            });
-    };
-
     var main = function (initParams) {
         messageBus = new Life.MessageBus();
         messageBus.on("showLifeView", function () {
@@ -77,8 +46,6 @@ Life.Main = function () {
     };
 
     that.main = function () {
-        amendUnderscore();
-
         $.get("/rest/init").done(function(data) {
             main(data);
         }).fail(function () {
@@ -103,7 +70,7 @@ Life.Util = {
         var message = spec.message;
         var callback = spec.callback;
 
-        var template = _.template(_.getFromUrl("/template/messageBox.html"));
+        var template = _.template($("#messageBoxHtml").html());
         $("body").append(template({
                 title: title,
                 message: message

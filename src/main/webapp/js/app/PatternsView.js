@@ -36,7 +36,7 @@ Life.PatternsView = function (spec) {
         var patternId = $(e.currentTarget).data("id");
         var pattern = patternList.get(patternId);
 
-        var template = _.template(_.getFromUrl("/template/confirmDeletePatternDialog.html"));
+        var template = _.template($("#confirmDeletePatternDialogHtml").html());
         $("body").append(template({name: pattern.get("name")}));
 
         $("#confirmDeletePatternDialog").dialog({
@@ -66,7 +66,7 @@ Life.PatternsView = function (spec) {
     };
 
     var handleUploadButton = function () {
-        $("body").append(_.getFromUrl("/template/uploadDialog.html"));
+        $("body").append($("#uploadDialogHtml").html());
 
         $("#uploadDialog").dialog({
             resizable: false,
@@ -127,7 +127,7 @@ Life.PatternsView = function (spec) {
         patternList.fetch(
             {
                 success: function (patternList) {
-                    var template = _.template(_.getFromUrl("/template/patternsView.html"));
+                    var template = _.template($("#patternsViewHtml").html());
                     that.$el.html(template({patternList: patternList.models}));
                     $("#patternsList .nameCell").editable(function (value, settings) {
                         var patternId = $(this).data("id");

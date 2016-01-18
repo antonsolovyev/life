@@ -45,6 +45,6 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>life.html</welcome-file>
+        <welcome-file>life.jsp</welcome-file>
     </welcome-file-list>
 </web-app>

@@ -152,7 +152,7 @@ Life.LifeView = function (spec) {
         var savedState = state;
         stop();
 
-        $('body').append(_.template(_.getFromUrl('/template/savePatternDialog.html')));
+        $('body').append(_.template($("#savePatternDialogHtml").html()));
         $('#savePatternDialog').dialog({
             resizable: false,
             modal: true,
@@ -375,7 +375,7 @@ Life.LifeView = function (spec) {
     };
 
     that.render = function () {
-        that.$el.html(_.getFromUrl("/template/lifeView.html"));
+        that.$el.html($("#lifeViewHtml").html());
 
         $(window).on("resize", function () {
             update();
