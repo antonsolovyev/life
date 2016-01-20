@@ -2,12 +2,12 @@ package com.solovyev.games.life.domain;
 
 public class InitParams
 {
-    private final Integer boardSizeLog2;
+    private final Integer cellSize;
     private final Integer timerTick;
 
-    public InitParams(Integer boardWidthLog2, Integer timerTick)
+    public InitParams(Integer cellSize, Integer timerTick)
     {
-        this.boardSizeLog2 = boardWidthLog2;
+        this.cellSize = cellSize;
         this.timerTick = timerTick;
     }
 
@@ -21,11 +21,16 @@ public class InitParams
         return timerTick;
     }
 
+    public Integer getCellSize()
+    {
+        return cellSize;
+    }
+
     @Override
     public String toString()
     {
         return "InitParams{" +
-            "boardSizeLog2=" + boardSizeLog2 +
+            "cellSize=" + cellSize +
             ", timerTick=" + timerTick +
             '}';
     }
@@ -44,7 +49,7 @@ public class InitParams
 
         InitParams that = (InitParams) o;
 
-        if ((boardSizeLog2 != null) ? (!boardSizeLog2.equals(that.boardSizeLog2)) : (that.boardSizeLog2 != null))
+        if ((cellSize != null) ? (!cellSize.equals(that.cellSize)) : (that.cellSize != null))
         {
             return false;
         }
@@ -56,14 +61,9 @@ public class InitParams
     @Override
     public int hashCode()
     {
-        int result = (boardSizeLog2 != null) ? boardSizeLog2.hashCode() : 0;
+        int result = (cellSize != null) ? cellSize.hashCode() : 0;
         result = (31 * result) + ((timerTick != null) ? timerTick.hashCode() : 0);
 
         return result;
-    }
-
-    public Integer getBoardSizeLog2()
-    {
-        return boardSizeLog2;
     }
 }

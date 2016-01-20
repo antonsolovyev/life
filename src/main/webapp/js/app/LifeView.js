@@ -24,9 +24,16 @@ Life.LifeView = function (spec) {
         STOPPED: "STOPPED",
         RUNNING: "RUNNING"
     };
+    
+    var Direction = {
+        UP: "UP",
+        DOWN: "DOWN",
+        RIGHT: "RIGHT",
+        LEFT: "LEFT"
+    }
 
     var PAN_FACTOR = 8;
-    var SCREEN_SIZE_RATIO = 0.90;
+    var SCREEN_SIZE_RATIO = 0.9;
     var FIELD_COLOR = "white";
     var CELL_COLOR = "black";
     var GAP_RATIO = 4;
@@ -55,20 +62,16 @@ Life.LifeView = function (spec) {
                     handleZoomOutButton();
                 },
                 "click #panRightButton": function () {
-                    boardCenter = {x: boardCenter.x - Math.floor(boardSize / PAN_FACTOR), y: boardCenter.y};
-                    update();
+                    handlePanButton(Direction.RIGHT);
                 },
                 "click #panLeftButton": function () {
-                    boardCenter = {x: boardCenter.x + Math.floor(boardSize / PAN_FACTOR), y: boardCenter.y};
-                    update();
+                    handlePanButton(Direction.LEFT);
                 },
                 "click #panUpButton": function () {
-                    boardCenter = {x: boardCenter.x, y: boardCenter.y + Math.floor(boardSize / PAN_FACTOR)};
-                    update();
+                    handlePanButton(Direction.UP);
                 },
                 "click #panDownButton": function () {
-                    boardCenter = {x: boardCenter.x, y: boardCenter.y - Math.floor(boardSize / PAN_FACTOR)};
-                    update();
+                    handlePanButton(Direction.DOWN);
                 },
                 "input #speedSlider": function (e) {
                     handleSlider(e);
@@ -83,17 +86,18 @@ Life.LifeView = function (spec) {
     var messageBus = spec.messageBus;
     var timerTick = spec.timerTick;
 
-    var initialBoardSize = Math.pow(2, spec.boardSizeLog2);
-    var boardSize = initialBoardSize;
+    var initialCellSize = spec.cellSize;
+    var cellSize = initialCellSize;
     var initialBoardCenter = {x: 0, y: 0};
     var boardCenter = initialBoardCenter;
+    var boardWidth;
+    var boardHeight;
+    var cellGap;
 
     var timer;
     var state = State.STOPPED;
     var lifeEngine;
     var canvas;
-    var cellSize;
-    var cellGap;
 
     messageBus.on("loadPattern", function (pattern) {
         reset();
@@ -105,31 +109,56 @@ Life.LifeView = function (spec) {
         update();
     });
 
+    var handlePanButton = function (direction) {
+        var shiftX = Math.floor(boardWidth / PAN_FACTOR);
+        if(shiftX < 1) {
+            shiftX = 1;
+        }
+        var shiftY = Math.floor(boardHeight / PAN_FACTOR);
+        if(shiftY < 1) {
+            shiftY = 1;
+        }
+        switch(direction) {
+            case Direction.UP:
+                boardCenter = {x: boardCenter.x, y: boardCenter.y + shiftY};
+                break;
+            case Direction.DOWN:
+                boardCenter = {x: boardCenter.x, y: boardCenter.y - shiftY};
+                break;
+            case Direction.RIGHT:
+                boardCenter = {x: boardCenter.x - shiftX, y: boardCenter.y};
+                break;
+            case Direction.LEFT:
+                boardCenter = {x: boardCenter.x + shiftX, y: boardCenter.y};
+                break;
+            default:
+        }
+        update();
+    };
+    
     var handleZoomInButton = function () {
-        boardSize /= 2;
-
-        if(boardSize <= 2) {
-            $("#zoomInButton").prop("disabled", true);
+        cellSize = Math.floor(cellSize * 2);
+        if(cellSize > 1) {
+            $("#zoomOutButton").prop("disabled", false);
         }
 
         update();
 
-        if(cellSize > 1) {
-            $("#zoomOutButton").prop("disabled", false);
+        if(boardWidth <= 2 || boardHeight <= 2) {
+            $("#zoomInButton").prop("disabled", true);
         }
     };
 
     var handleZoomOutButton = function () {
-        boardSize *= 2;
-
-        if(boardSize > 2) {
-            $("#zoomInButton").prop("disabled", false);
+        cellSize = Math.floor(cellSize / 2);
+        if(cellSize <= 1) {
+            $("#zoomOutButton").prop("disabled", true);
         }
 
         update();
 
-        if(cellSize <= 1) {
-            $("#zoomOutButton").prop("disabled", true);
+        if(boardWidth > 2 && boardHeight > 2) {
+            $("#zoomInButton").prop("disabled", false);
         }
     };
 
@@ -166,8 +195,8 @@ Life.LifeView = function (spec) {
                     var name = $('#nameField').val();
                     if (name && name !== "") {
                         var locations = [];
-                        for (var i = 0; i < boardSize; i++) {
-                            for (var j = 0; j < boardSize; j++) {
+                        for (var i = 0; i < boardWidth; i++) {
+                            for (var j = 0; j < boardHeight; j++) {
                                 if (lifeEngine.getCell(i, j).live) {
                                     locations.push({x: i, y: j});
                                 }
@@ -245,7 +274,7 @@ Life.LifeView = function (spec) {
 
     var reset = function () {
         stop();
-        boardSize = initialBoardSize;
+        cellSize = initialCellSize;
         boardCenter = initialBoardCenter;
         lifeEngine.reset()
         update();
@@ -261,10 +290,13 @@ Life.LifeView = function (spec) {
             return;
         }
 
-        cellSize = getCellSize($(window).width() - $("#lifeViewControls").width(), $(window).height());
+        boardWidth = getBoardWidth($(window).width() - $("#lifeViewControls").width() - $("#lifeViewNav").width(),
+            $(window).height());
+        boardHeight = getBoardHeight($(window).width() - $("#lifeViewControls").width() - $("#lifeViewNav").width(),
+            $(window).height());
         cellGap = getCellGap(cellSize);
-        canvas.height = getCanvasSize();
-        canvas.width = getCanvasSize();
+        canvas.height = getCanvasHeight();
+        canvas.width = getCanvasWidth();
 
         cleanCanvas();
         drawGrid();
@@ -278,14 +310,14 @@ Life.LifeView = function (spec) {
             return;
         }
 
-        for (var i = 0; i <= boardSize; i++) {
+        for (var i = 0; i <= boardWidth; i++) {
             drawRect(new Rect({left: cellSize * i, top: 0, right: cellSize * i + cellGap,
-                bottom: getCanvasSize()}), GRID_COLOR);
+                bottom: getCanvasHeight()}), GRID_COLOR);
         }
 
-        for (var i = 0; i <= boardSize; i++) {
+        for (var i = 0; i <= boardHeight; i++) {
             drawRect(new Rect({top: cellSize * i, left: 0, bottom: cellSize * i + cellGap,
-                right: getCanvasSize()}), GRID_COLOR);
+                right: getCanvasWidth()}), GRID_COLOR);
         }
     };
 
@@ -297,25 +329,34 @@ Life.LifeView = function (spec) {
         }
     };
 
-    var getCellSize = function (availableWidth, availableHeight) {
-        var res = Math.floor(Math.min(availableHeight, availableWidth) * SCREEN_SIZE_RATIO *
-            GAP_RATIO / (GAP_RATIO * boardSize + 1));
+    var getCellGap = function (cellSize) {
+        return Math.round(cellSize / GAP_RATIO);
+    };
+
+    var getBoardWidth = function (availableWidth, availableHeight) {
+        var res = Math.floor((availableWidth * SCREEN_SIZE_RATIO -
+            getCellGap(cellSize)) / cellSize);
         if(res < 1) {
             return 1;
         }
         return res;
     };
 
-    var getCellGap = function (cellSize) {
-        return Math.round(cellSize / GAP_RATIO);
+    var getBoardHeight = function (availableWidth, availableHeight) {
+        var res = Math.floor((availableHeight * SCREEN_SIZE_RATIO -
+            getCellGap(cellSize)) / cellSize);
+        if(res < 1) {
+            return 1;
+        }
+        return res;
     };
 
     var getBoardOffsetX = function () {
-        return boardCenter.x + boardSize / 2;
+        return boardCenter.x + Math.floor(boardWidth / 2);
     };
 
     var getBoardOffsetY = function () {
-        return boardCenter.y + boardSize / 2;
+        return boardCenter.y + Math.floor(boardHeight / 2);
     };
 
     var getCellRect = function (x, y) {
@@ -338,8 +379,12 @@ Life.LifeView = function (spec) {
         return {x: boardX, y: boardY}
     };
 
-    var getCanvasSize = function () {
-        return boardSize * cellSize + cellGap;
+    var getCanvasWidth = function () {
+        return boardWidth * cellSize + cellGap;
+    };
+
+    var getCanvasHeight = function () {
+        return boardHeight * cellSize + cellGap;
     };
 
     var drawRect = function (rect, color) {

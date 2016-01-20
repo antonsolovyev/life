@@ -16,7 +16,7 @@
 
     <bean id="lifeResource" class="com.solovyev.games.life.rest.LifeResource">
         <constructor-arg index="0" ref="datastorePatternDao"/>
-        <constructor-arg index="1" value="${boardSizeLog2}"/>
+        <constructor-arg index="1" value="${cellSize}"/>
         <constructor-arg index="2" value="${timerTick}"/>
     </bean>
 
